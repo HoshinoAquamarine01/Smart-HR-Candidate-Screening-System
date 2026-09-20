@@ -210,10 +210,3 @@ Frontend web dashboard will be available at `http://localhost:5173`.
 Distributed under the MIT License. See `LICENSE` for more information.
 
 ---
-
-## 👨‍💻 Author & Contact
-
-**Your Name**  
-- **Email**: `your.email@example.com`  
-- **GitHub**: [@yourusername](https://github.com)  
-- **LinkedIn**: [linkedin.com/in/yourprofile](https://linkedin.com)
