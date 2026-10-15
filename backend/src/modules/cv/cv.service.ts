@@ -3,10 +3,9 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Cvs, CvsDocument } from '../../schemas/cvs.schema';
 import { Candidates, CandidatesDocument } from '../../schemas/candidates.schema';
+import { OcrService } from '../ocr/ocr.service';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as mammoth from 'mammoth';
-import { PDFParse } from 'pdf-parse';
 
 @Injectable()
 export class CvService {
@@ -15,51 +14,23 @@ export class CvService {
     private readonly cvModel: Model<CvsDocument>,
     @InjectModel(Candidates.name)
     private readonly candidateModel: Model<CandidatesDocument>,
+    private readonly ocrService: OcrService,
   ) {}
-
- 
-  private async extractText(filePath: string, mimeType: string): Promise<string> {
-    try {
-      if (!fs.existsSync(filePath)) {
-        return '';
-      }
-      const buffer = fs.readFileSync(filePath);
-
-      if (mimeType === 'application/pdf' || filePath.toLowerCase().endsWith('.pdf')) {
-        const parser = new PDFParse({ data: buffer });
-        const res = await parser.getText();
-        return res.text || '';
-      }
-
-      if (
-        mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
-        filePath.toLowerCase().endsWith('.docx')
-      ) {
-        const res = await mammoth.extractRawText({ buffer });
-        return res.value || '';
-      }
-    } catch (error) {
-      console.error('Failed to extract text from CV:', error);
-    }
-    return '';
-  }
-
 
   async uploadCv(file: Express.Multer.File, user: any) {
     if (!file) {
       throw new BadRequestException('CV file is required');
     }
 
-    const extractedText = await this.extractText(file.path, file.mimetype);
+    const ocr = await this.ocrService.extractText(file.path, file.mimetype, file.buffer);
+    const extractedText = ocr.cleanedText || ocr.rawText;
 
-    
     const defaultName = path.basename(file.originalname, path.extname(file.originalname));
     const candidate = await this.candidateModel.create({
       fullName: defaultName || 'Unknown Candidate',
       summary: extractedText ? extractedText.slice(0, 500) : 'CV Uploaded',
     });
 
-    
     const uploaderId = user?._id ? new Types.ObjectId(user._id) : new Types.ObjectId();
     const cv = await this.cvModel.create({
       candidateId: candidate._id,
@@ -68,8 +39,14 @@ export class CvService {
       fileSize: file.size,
       mimeType: file.mimetype,
       parsedData: {
-        rawText: extractedText,
-        extractedLength: extractedText.length,
+        rawText: ocr.rawText,
+        cleanedText: ocr.cleanedText,
+        characterCount: ocr.characterCount,
+        wordCount: ocr.wordCount,
+        extractorUsed: ocr.extractorUsed,
+        isScanned: ocr.isScanned,
+        confidenceScore: ocr.confidenceScore,
+        extractedLength: ocr.characterCount,
       },
       uploadedBy: uploaderId,
     });
