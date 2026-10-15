@@ -7,6 +7,8 @@ import { AuthModule } from '../auth/auth.module';
 import { Cvs, CvsSchema } from '../../schemas/cvs.schema';
 import { Candidates, CandidatesSchema } from '../../schemas/candidates.schema';
 
+import { OcrModule } from '../ocr/ocr.module';
+
 @Module({
   imports: [
     MongooseModule.forFeature([
@@ -15,6 +17,7 @@ import { Candidates, CandidatesSchema } from '../../schemas/candidates.schema';
     ]),
     AuthModule,
     AiModule,
+    OcrModule,
   ],
   controllers: [CvController],
   providers: [CvService],

@@ -49,7 +49,23 @@ async function runCvTests() {
     }),
   };
 
-  const cvService = new CvService(mockCvModel as any, mockCandidateModel as any);
+  const mockOcrService: any = {
+    extractText: async () => ({
+      rawText: '',
+      cleanedText: '',
+      characterCount: 0,
+      wordCount: 0,
+      extractorUsed: 'raw-fallback',
+      isScanned: false,
+      confidenceScore: 0,
+    }),
+  };
+
+  const cvService = new CvService(
+    mockCvModel as any,
+    mockCandidateModel as any,
+    mockOcrService,
+  );
 
   // Prepare dummy file in uploads/cvs
   const uploadsDir = path.join(process.cwd(), 'uploads', 'cvs');
