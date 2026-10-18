@@ -17,6 +17,7 @@
     "test:auth": "ts-node -r tsconfig-paths/register test/test-auth.ts",
     "test:cv": "ts-node -r tsconfig-paths/register test/test-cv.ts",
     "test:ocr": "ts-node -r tsconfig-paths/register test/test-ocr.ts",
+    "test:ocr:real": "ts-node -r tsconfig-paths/register test/test-real-ocr.ts",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
