@@ -61,10 +61,47 @@ async function runCvTests() {
     }),
   };
 
+  const mockAiService: any = {
+    extractCvStructuredData: async (text: string) => ({
+      profile: {
+        personalInfo: {
+          fullName: 'Nguyễn Văn A',
+          email: 'nguyenvana@example.com',
+          phone: '0987654321',
+          location: 'Hà Nội',
+          linkedin: null,
+          github: null,
+          portfolioUrl: null,
+          currentTitle: 'Senior Software Engineer',
+        },
+        summary: 'Kỹ sư phần mềm 5 năm kinh nghiệm.',
+        yearsOfExperience: 5,
+        skills: {
+          technicalSkills: ['NestJS', 'TypeScript', 'MongoDB'],
+          softSkills: ['Làm việc nhóm'],
+          toolsAndPlatforms: ['Docker', 'Git'],
+        },
+        workExperience: [],
+        education: [],
+        certifications: [],
+        languages: [],
+        projects: [],
+      },
+      ocrMetadata: { cleanedLength: text.length },
+      extractionMetadata: {
+        extractorModel: 'mock-llm',
+        confidenceScore: 95,
+        processingTimeMs: 120,
+        extractedAt: new Date(),
+      },
+    }),
+  };
+
   const cvService = new CvService(
     mockCvModel as any,
     mockCandidateModel as any,
     mockOcrService,
+    mockAiService,
   );
 
   // Prepare dummy file in uploads/cvs

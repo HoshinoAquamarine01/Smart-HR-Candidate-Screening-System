@@ -78,6 +78,12 @@ export class CvController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Post(':id/extract')
+  async reExtractCv(@Param('id') id: string) {
+    return this.cvService.reExtractCv(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get(':id/file')
   async getCvFile(
     @Param('id') id: string,
