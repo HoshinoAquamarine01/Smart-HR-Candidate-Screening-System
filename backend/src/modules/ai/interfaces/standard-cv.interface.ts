@@ -62,7 +62,14 @@ export interface StandardSkills {
   toolsAndPlatforms: string[];
 }
 
+export interface ExtractionReasoning {
+  detectedNameRationale?: string;
+  timelineDeduplication?: string;
+  languageDetected?: string;
+}
+
 export interface StandardCvProfile {
+  _reasoning?: ExtractionReasoning;
   personalInfo: StandardPersonalInfo;
   summary: string;
   yearsOfExperience: number;
@@ -78,6 +85,7 @@ export interface ExtractionMetadata {
   extractorModel: string;
   confidenceScore: number;
   processingTimeMs: number;
+  reasoning?: ExtractionReasoning;
   tokensUsed?: {
     promptTokens: number;
     completionTokens: number;

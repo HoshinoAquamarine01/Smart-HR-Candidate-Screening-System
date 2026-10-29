@@ -3,6 +3,14 @@ import { z } from 'zod';
 export const CV_EXTRACTION_GEMINI_SCHEMA = {
   type: 'OBJECT',
   properties: {
+    _reasoning: {
+      type: 'OBJECT',
+      properties: {
+        detectedNameRationale: { type: 'STRING' },
+        timelineDeduplication: { type: 'STRING' },
+        languageDetected: { type: 'STRING' },
+      },
+    },
     personalInfo: {
       type: 'OBJECT',
       properties: {
@@ -111,23 +119,23 @@ export const CV_EXTRACTION_GEMINI_SCHEMA = {
 
 export const PersonalInfoZodSchema = z.object({
   fullName: z.string().describe('Họ và tên đầy đủ của ứng viên'),
-  email: z.string().nullable().describe('Địa chỉ email hợp lệ hoặc null'),
-  phone: z.string().nullable().describe('Số điện thoại liên hệ hoặc null'),
-  location: z.string().nullable().describe('Thành phố/Địa chỉ hiện tại hoặc null'),
-  linkedin: z.string().nullable().describe('Đường dẫn LinkedIn hoặc null'),
-  github: z.string().nullable().describe('Đường dẫn GitHub hoặc null'),
-  portfolioUrl: z.string().nullable().describe('Trang web cá nhân hoặc null'),
-  currentTitle: z.string().nullable().describe('Vị trí công việc hiện tại hoặc gần nhất'),
+  email: z.string().nullish().describe('Địa chỉ email hợp lệ hoặc null'),
+  phone: z.string().nullish().describe('Số điện thoại liên hệ hoặc null'),
+  location: z.string().nullish().describe('Thành phố/Địa chỉ hiện tại hoặc null'),
+  linkedin: z.string().nullish().describe('Đường dẫn LinkedIn hoặc null'),
+  github: z.string().nullish().describe('Đường dẫn GitHub hoặc null'),
+  portfolioUrl: z.string().nullish().describe('Trang web cá nhân hoặc null'),
+  currentTitle: z.string().nullish().describe('Vị trí công việc hiện tại hoặc gần nhất'),
 });
 
 export const WorkExperienceZodSchema = z.object({
   company: z.string().describe('Tên công ty / tổ chức'),
   role: z.string().describe('Vị trí / chức danh làm việc'),
-  location: z.string().nullable().describe('Địa điểm công ty hoặc Onsite/Remote'),
-  startDate: z.string().nullable().describe('Thời gian bắt đầu: YYYY-MM hoặc YYYY'),
-  endDate: z.string().nullable().describe('Thời gian kết thúc: YYYY-MM, YYYY, hoặc Present'),
+  location: z.string().nullish().describe('Địa điểm công ty hoặc Onsite/Remote'),
+  startDate: z.string().nullish().describe('Thời gian bắt đầu: YYYY-MM hoặc YYYY'),
+  endDate: z.string().nullish().describe('Thời gian kết thúc: YYYY-MM, YYYY, hoặc Present'),
   isCurrent: z.boolean().describe('true nếu hiện tại vẫn đang làm việc tại đây'),
-  durationMonths: z.number().nullable().describe('Số tháng làm việc ước tính'),
+  durationMonths: z.number().nullish().describe('Số tháng làm việc ước tính'),
   description: z.string().describe('Tóm tắt tổng quan về công việc'),
   responsibilities: z.array(z.string()).describe('Các đầu việc chính đã thực hiện'),
   achievements: z.array(z.string()).describe('Các thành tựu, giải thưởng hoặc con số nổi bật'),
@@ -138,31 +146,39 @@ export const EducationZodSchema = z.object({
   institution: z.string().describe('Tên trường Đại học / Cao đẳng / Học viện'),
   degree: z.string().describe('Bằng cấp: Cử nhân, Thạc sĩ, Kỹ sư, Trung cấp...'),
   fieldOfStudy: z.string().describe('Chuyên ngành: Khoa học máy tính, CNTT, Kinh tế...'),
-  startDate: z.string().nullable().describe('Năm bắt đầu'),
-  endDate: z.string().nullable().describe('Năm kết thúc'),
-  graduationYear: z.string().nullable().describe('Năm tốt nghiệp'),
-  gpa: z.string().nullable().describe('Điểm GPA hoặc xếp loại tốt nghiệp'),
+  startDate: z.string().nullish().describe('Năm bắt đầu'),
+  endDate: z.string().nullish().describe('Năm kết thúc'),
+  graduationYear: z.string().nullish().describe('Năm tốt nghiệp'),
+  gpa: z.string().nullish().describe('Điểm GPA hoặc xếp loại tốt nghiệp'),
 });
 
 export const CertificationZodSchema = z.object({
   name: z.string().describe('Tên chứng chỉ: AWS SAA, IELTS, PMP, JLPT...'),
-  issuer: z.string().nullable().describe('Tổ chức cấp chứng chỉ'),
-  issueDate: z.string().nullable().describe('Ngày cấp'),
-  expiryDate: z.string().nullable().describe('Ngày hết hạn'),
-  credentialUrl: z.string().nullable().describe('Link tra cứu chứng chỉ'),
+  issuer: z.string().nullish().describe('Tổ chức cấp chứng chỉ'),
+  issueDate: z.string().nullish().describe('Ngày cấp'),
+  expiryDate: z.string().nullish().describe('Ngày hết hạn'),
+  credentialUrl: z.string().nullish().describe('Link tra cứu chứng chỉ'),
 });
 
 export const ProjectZodSchema = z.object({
   projectName: z.string().describe('Tên dự án tiêu biểu'),
-  role: z.string().nullable().describe('Vai trò trong dự án'),
+  role: z.string().nullish().describe('Vai trò trong dự án'),
   description: z.string().describe('Mô tả mục tiêu dự án và quy mô'),
-  startDate: z.string().nullable().describe('Ngày bắt đầu'),
-  endDate: z.string().nullable().describe('Ngày hoàn thành'),
+  startDate: z.string().nullish().describe('Ngày bắt đầu'),
+  endDate: z.string().nullish().describe('Ngày hoàn thành'),
   techStack: z.array(z.string()).describe('Các công nghệ sử dụng trong dự án'),
-  projectUrl: z.string().nullable().describe('Link GitHub hoặc Live Demo'),
+  projectUrl: z.string().nullish().describe('Link GitHub hoặc Live Demo'),
 });
 
 export const CandidateProfileZodSchema = z.object({
+  _reasoning: z
+    .object({
+      detectedNameRationale: z.string().optional(),
+      timelineDeduplication: z.string().optional(),
+      languageDetected: z.string().optional(),
+    })
+    .optional()
+    .describe('Internal scratchpad reasoning for name disambiguation and timeline calculation'),
   personalInfo: PersonalInfoZodSchema,
   summary: z.string().describe('Đoạn tóm tắt bản thân hoặc mục tiêu nghề nghiệp'),
   yearsOfExperience: z.number().describe('Tổng số năm kinh nghiệm làm việc thực tế'),
