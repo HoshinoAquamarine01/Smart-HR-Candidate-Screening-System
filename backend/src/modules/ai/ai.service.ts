@@ -3,6 +3,7 @@ import { GeminiProvider } from './providers/gemini.provider';
 import { OpenAiProvider } from './providers/openai.provider';
 import { MockAiProvider } from './providers/mock.provider';
 import { FullParsedCvData, StandardCvProfile } from './interfaces/standard-cv.interface';
+import { CandidateSanitizerUtil } from './utils/candidate-sanitizer.util';
 
 @Injectable()
 export class AiService {
@@ -14,20 +15,12 @@ export class AiService {
     private readonly mockAiProvider: MockAiProvider,
   ) {}
 
-  /**
-   * Pre-sanitize extracted text to reduce tokens and remove noise
-   */
+  
   private sanitizeText(rawText: string): string {
-    return rawText
-      .replace(/\r\n/g, '\n')
-      .replace(/\n{3,}/g, '\n\n')
-      .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '') // remove control chars
-      .trim();
+    return CandidateSanitizerUtil.sanitizeRawCvText(rawText);
   }
 
-  /**
-   * Extract standardized structured data from CV text using LLM
-   */
+  
   async extractCvStructuredData(cleanedText: string): Promise<FullParsedCvData> {
     const startTime = Date.now();
     const sanitized = this.sanitizeText(cleanedText || '');
@@ -46,7 +39,6 @@ export class AiService {
       confidenceScore?: number;
     } | null = null;
 
-    // 1. Primary: Google Gemini 2.0 Flash
     if (this.geminiProvider.isAvailable()) {
       try {
         this.logger.log('Attempting CV extraction with Google Gemini...');
@@ -56,7 +48,7 @@ export class AiService {
       }
     }
 
-    // 2. Secondary fallback: OpenAI GPT-4o-mini
+   
     if (!extractionResult && this.openaiProvider.isAvailable()) {
       try {
         this.logger.log('Attempting CV extraction with OpenAI fallback...');
@@ -66,32 +58,41 @@ export class AiService {
       }
     }
 
-    // 3. Fallback: Mock Provider (for offline development / test when API keys not provided)
+ 
     if (!extractionResult) {
       this.logger.log('Using MockAiProvider fallback for structured CV profile');
       extractionResult = await this.mockAiProvider.extractCv(sanitized);
     }
 
+   
+    const reasoning = extractionResult.profile._reasoning;
+    delete (extractionResult.profile as any)._reasoning;
+
+    
+    const sanitizedProfile = CandidateSanitizerUtil.sanitizeCandidateProfile(extractionResult.profile);
+
+   
+    const dynamicConfidence = CandidateSanitizerUtil.calculateDynamicConfidenceScore(sanitizedProfile);
+
     const processingTimeMs = Date.now() - startTime;
 
     return {
-      profile: extractionResult.profile,
+      profile: sanitizedProfile,
       ocrMetadata: {
         cleanedLength: sanitized.length,
       },
       extractionMetadata: {
         extractorModel: extractionResult.modelUsed,
-        confidenceScore: extractionResult.confidenceScore ?? 90,
+        confidenceScore: dynamicConfidence,
         processingTimeMs,
+        reasoning,
         tokensUsed: extractionResult.tokensUsed,
         extractedAt: new Date(),
       },
     };
   }
 
-  /**
-   * Backward-compatible stub
-   */
+ 
   async generateCompletion(prompt: string, schema?: object): Promise<any> {
     return { status: 'stub', promptReceived: prompt };
   }
