@@ -64,7 +64,7 @@ export class OpenAiProvider implements IAiProvider {
       parsedProfile = message.parsed;
       tokensUsed = completion.usage;
     } else {
-      // Fallback using standard create with response_format json_object or zod schema
+  
       const completion = await this.client.chat.completions.create({
         model: this.modelName,
         messages: [
@@ -90,5 +90,23 @@ export class OpenAiProvider implements IAiProvider {
       },
       confidenceScore: 90,
     };
+  }
+
+
+  async generateEmbedding(text: string): Promise<number[]> {
+    if (!this.client || !text || text.trim() === '') {
+      return [];
+    }
+
+    try {
+      const response = await this.client.embeddings.create({
+        model: 'text-embedding-3-small',
+        input: text.trim(),
+      });
+      return response.data?.[0]?.embedding || [];
+    } catch (err: any) {
+      this.logger.warn(`OpenAI embedding warning: ${err.message}`);
+      return [];
+    }
   }
 }

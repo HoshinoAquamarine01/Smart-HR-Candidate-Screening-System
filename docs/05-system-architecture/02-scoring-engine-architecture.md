@@ -6,14 +6,26 @@
 
 ## 1. Công Thức Đánh Giá Đa Chiều (Multi-Dimensional Scoring Model)
 
-Điểm tương thích tổng hợp giữa ứng viên và Mô tả công việc ($S_{\text{total}}$) được tính toán trên thang điểm **0 – 100%** theo công thức trọng số:
+Điểm tương thích tổng hợp giữa ứng viên và Mô tả công việc ($S_{\text{total}}$) được tính toán trên thang điểm **0 – 100%** theo công thức trọng số đa trụ cột (được hoàn thiện trong nghiên cứu Tuần 11):
 
-$$S_{\text{total}} = w_{\text{skill}} \cdot S_{\text{skill}} + w_{\text{exp}} \cdot S_{\text{exp}} + w_{\text{domain}} \cdot S_{\text{domain}}$$
+$$S_{\text{total}} = w_1 \cdot S_{\text{semantic}} + w_2 \cdot S_{\text{skill}} + w_3 \cdot S_{\text{exp}} + w_4 \cdot S_{\text{edu}}$$
 
 Trong đó:
-- **Trọng số Kỹ năng ($w_{\text{skill}} = 0.45$)**: Kỹ năng kỹ thuật và công cụ bắt buộc.
-- **Trọng số Kinh nghiệm ($w_{\text{exp}} = 0.35$)**: Số năm kinh nghiệm làm việc thực tế và cấp bậc tương đương.
-- **Trọng số Nghiệp vụ & Học vấn ($w_{\text{domain}} = 0.20$)**: Miền kiến thức chuyên ngành và bằng cấp.
+- **Điều kiện ràng buộc**: $w_1 + w_2 + w_3 + w_4 = 1$.
+- **$S_{\text{semantic}}$ (Semantic Score)**: Mức độ tương đồng ngữ nghĩa tổng thể giữa CV và JD thông qua mô hình Vector Embedding và **Cosine Similarity**:
+  $$\text{Cosine Similarity}(\vec{A}, \vec{B}) = \frac{\vec{A} \cdot \vec{B}}{\|\vec{A}\| \times \|\vec{B}\|}$$
+- **$S_{\text{skill}}$ (Skill Fit Score)**: Mức độ đáp ứng kỹ năng kỹ thuật, phân loại theo **Required Skills** ($a_r = 3.0$) và **Preferred Skills** ($a_p = 1.0$) với mức độ đáp ứng $m_i \in \{0, 0.5, 1.0\}$:
+  $$S_{\text{skill}} = \left( \frac{\sum_{i=1}^n a_i \times m_i}{\sum_{i=1}^n a_i} \right) \times 100$$
+- **$S_{\text{exp}}$ (Experience Score)**: Mức độ phù hợp về số năm kinh nghiệm làm việc thực tế so với yêu cầu vị trí.
+- **$S_{\text{edu}}$ (Education Score)**: Mức độ đáp ứng về bằng cấp, chuyên ngành đào tạo (CNTT, Khoa học máy tính) và chứng chỉ liên quan.
+
+### Bảng Trọng Số Đề Xuất Theo Cấp Bậc (Preset Weights)
+
+| Cấp bậc tuyển dụng | $w_1$ (Semantic) | $w_2$ (Skill) | $w_3$ (Experience) | $w_4$ (Education) |
+| :--- | :---: | :---: | :---: | :---: |
+| **Intern / Fresher** | 0.25 | **0.45** | 0.05 | **0.25** |
+| **Junior / Middle** | 0.25 | **0.45** | 0.25 | 0.05 |
+| **Senior / Lead** | 0.20 | 0.35 | **0.40** | 0.05 |
 
 ---
 
@@ -46,14 +58,22 @@ Trong đó:
 {
   "totalMatchScore": 88,
   "breakdown": {
+    "semanticScore": 85,
     "skillScore": 92,
     "experienceScore": 85,
-    "domainScore": 80
+    "educationScore": 90
+  },
+  "weightsApplied": {
+    "semantic": 0.25,
+    "skill": 0.45,
+    "experience": 0.25,
+    "education": 0.05
   },
   "skillAnalysis": {
     "matchedSkills": ["TypeScript", "NestJS", "MongoDB", "Docker", "Git"],
-    "missingMustHave": [],
-    "missingNiceToHave": ["Kubernetes", "RabbitMQ"]
+    "partialSkills": ["PostgreSQL"],
+    "missingRequired": [],
+    "missingPreferred": ["Kubernetes", "RabbitMQ"]
   },
   "rationale": "Ứng viên có nền tảng kỹ thuật backend vững chắc với hơn 4 năm kinh nghiệm thực tế về NestJS và MongoDB, đáp ứng trọn vẹn yêu cầu chính của vị trí Senior Backend Developer. Điểm cần đào sâu khi phỏng vấn là kinh nghiệm vận hành cụm phân tán quy mô lớn với Kubernetes."
 }

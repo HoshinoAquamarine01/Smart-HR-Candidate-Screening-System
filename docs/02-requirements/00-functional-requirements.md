@@ -1,58 +1,81 @@
-# 📋 Yêu Cầu Chức Năng (Functional Requirements)
+# 📋 Đặc Tả Yêu Cầu Chức Năng (Functional Requirements - SRS)
 
 > **Dự án**: Smart HR & Candidate Screening System  
+> **Tiêu chuẩn áp dụng**: IEEE Std 830-1998 / ISO/IEC/IEEE 29148  
+> **Quy ước từ ngữ**: **PHẢI** (MUST/SHALL) cho tính năng cốt lõi bắt buộc, **NÊN** (SHOULD) cho khuyến nghị, **CÓ THỂ** (MAY) cho tính năng nâng cao.
 
 ---
 
-## 1. Danh Mục Yêu Cầu Chức Năng (Functional Requirements Matrix)
+## 1. Bảng Phân Loại Tính Năng Theo Phạm Vi (Feature Classification Matrix)
 
-### Module 1: Quản Lý Xác Thực & Người Dùng (Auth & User Management)
-- **FR-AUTH-01 (Đăng ký tài khoản)**: Hệ thống cho phép người dùng đăng ký tài khoản với email hợp lệ, mật khẩu bảo mật (tối thiểu 6 ký tự). Mật khẩu phải được mã hóa bằng thuật toán `bcrypt` trước khi lưu trữ vào CSDL.
-- **FR-AUTH-02 (Đăng nhập & JWT)**: Người dùng đăng nhập thành công nhận được mã `access_token` định dạng JWT có thời hạn hợp lệ để xác thực các yêu cầu tiếp theo.
-- **FR-AUTH-03 (Phân quyền người dùng)**: Hỗ trợ các vai trò người dùng (Recruiter, Hiring Manager, Admin) kiểm soát quyền truy cập tài nguyên.
-
----
-
-### Module 2: Quản Lý & Tải Lên Hồ Sơ CV (CV Management & OCR)
-- **FR-CV-01 (Tải lên đa định dạng)**: Cho phép tải lên tệp tin CV có định dạng PDF, Microsoft Word (`.docx`, `.doc`), và Ảnh (`.png`, `.jpg`, `.jpeg`). Giới hạn kích thước tối đa 5MB mỗi tệp.
-- **FR-CV-02 (Trích xuất văn bản thô - OCR)**:
-  - Tệp PDF Native: Trích xuất trực tiếp bằng thư viện `pdf-parse`.
-  - Tệp Word `.docx`: Trích xuất bằng thư viện `mammoth`.
-  - Tệp ảnh hoặc Scanned PDF: Tự động kích hoạt nhận diện ký tự quang học qua `tesseract.js`.
-- **FR-CV-03 (Làm sạch văn bản)**: Tự động loại bỏ mã rác, chuẩn hóa ký tự xuống dòng liên tiếp, loại bỏ ký tự điều khiển (control characters) và tính toán số từ/số ký tự.
-- **FR-CV-04 (Xem & Tải tệp CV)**: Hỗ trợ endpoint tải hoặc xem trực tuyến (streaming inline) file gốc của ứng viên.
-
----
-
-### Module 3: Bóc Tách Hồ Sơ Ngữ Nghĩa Qua LLM (LLM Semantic Extraction)
-- **FR-LLM-01 (Trích xuất Profile Chuẩn)**: Chuyển đổi văn bản thô từ OCR thành đối tượng JSON chuẩn hóa (`StandardCvProfile`) bao gồm:
-  - Thông tin cá nhân: Họ tên, email, số điện thoại, địa chỉ, liên kết mạng xã hội (LinkedIn, GitHub).
-  - Tóm tắt nghề nghiệp (Professional Summary).
-  - Kỹ năng phân loại 3 tầng: Kỹ thuật (Technical Skills), Kỹ năng mềm (Soft Skills), Công cụ/Nền tảng (Tools & Platforms).
-  - Lịch sử công tác: Tên công ty, chức danh, khoảng thời gian (startDate, endDate, isCurrent), trách nhiệm, thành tựu nổi bật, tech stack đã dùng.
-  - Học vấn, chứng chỉ chuyên môn, ngoại ngữ và dự án thực tế.
-- **FR-LLM-02 (Đồng bộ ứng viên)**: Tự động cập nhật họ tên thực và thông tin liên hệ vào bảng `Candidates`. Nếu email ứng viên đã tồn tại, liên kết CV mới với ứng viên hiện có nhằm tránh tạo dữ liệu rác (Deduplication).
-- **FR-LLM-03 (Tái trích xuất - Re-extract)**: Cung cấp API `POST /api/v1/cv/:id/extract` cho phép kích hoạt lại quá trình trích xuất LLM từ dữ liệu OCR đã lưu.
-- **FR-LLM-04 (Cơ chế chịu lỗi - Fallback)**: Tự động chuyển đổi giữa Google Gemini 2.0 Flash $\rightarrow$ OpenAI GPT-4o-mini $\rightarrow$ Mock Offline Provider nếu gặp sự cố mạng hoặc hết hạn ngạch API.
-
----
-
-### Module 4: Quản Lý Mô Tả Công Việc (Job Description - JD Management)
-- **FR-JD-01 (Tạo và quản lý JD)**: Cho phép HR tạo mới vị trí tuyển dụng với các trường: Tiêu đề công việc, phòng ban, cấp bậc (Junior, Mid, Senior, Lead), mô tả trách nhiệm, kỹ năng bắt buộc, kỹ năng ưu tiên, số năm kinh nghiệm yêu cầu.
-- **FR-JD-02 (Chuẩn hóa tiêu chí JD)**: Tự động chuẩn hóa từ khóa kỹ năng từ mô tả văn bản tự do của JD.
+| Mã Tính Năng | Tên Tính Năng | Phạm Vi (Scope) | Trạng Thái Bắt Buộc |
+| :--- | :--- | :---: | :---: |
+| **FR-USER-01** | Đăng nhập & Xác thực bảo mật | Core | **MUST (Bắt buộc)** |
+| **FR-USER-02** | Phân quyền vai trò người dùng (RBAC) | Core | **MUST (Bắt buộc)** |
+| **FR-USER-03** | Quản lý nhật ký hoạt động (Audit Log / Audit Trail) | Core | **MUST (Bắt buộc)** |
+| **FR-JOB-01** | Quản lý Mô tả Công việc (Job Description - JD) | Core | **MUST (Bắt buộc)** |
+| **FR-JOB-02** | Trích xuất tiêu chí JD tự động bằng AI | Core | **MUST (Bắt buộc)** |
+| **FR-JOB-03** | Tùy chỉnh trọng số đánh giá vị trí tuyển dụng | Core | **MUST (Bắt buộc)** |
+| **FR-CAND-01** | Tải lên CV đơn lẻ (Upload Single CV - PDF/DOCX) | Core | **MUST (Bắt buộc)** |
+| **FR-CAND-02** | Quản lý hồ sơ ứng viên (Xem, Cập nhật thông tin) | Core | **MUST (Bắt buộc)** |
+| **FR-CAND-03** | Quản lý trạng thái ứng viên trong quy trình (Pipeline) | Core | **MUST (Bắt buộc)** |
+| **FR-CAND-04** | Xem trực tuyến & tải tệp CV gốc | Core | **MUST (Bắt buộc)** |
+| **FR-CAND-05** | Tải lên hàng loạt hồ sơ CV (Batch Upload) | Advanced | **MAY (Mở rộng)** |
+| **FR-CAND-06** | Xem xét & Đưa ra quyết định của Recruiter (Human-in-the-loop) | Core | **MUST (Bắt buộc)** |
+| **FR-AI-01** | Tiếp nhận và trích xuất văn bản thô từ tài liệu CV (OCR) | Core | **MUST (Bắt buộc)** |
+| **FR-AI-02** | Phân tích và chuyển đổi nội dung CV thành JSON có cấu trúc (LLM Parsing) | Core | **MUST (Bắt buộc)** |
+| **FR-AI-03** | So khớp Ngữ nghĩa thông qua Vector Embedding & Cosine Similarity | Core | **MUST (Bắt buộc)** |
+| **FR-AI-04** | Nhận diện kỹ năng tương đương (Synonyms / Normalization) | Core | **MUST (Bắt buộc)** |
+| **FR-AI-04a** | Phân loại mức độ so khớp theo ngưỡng (Exact / Semantic / Partial / Missing) | Core | **MUST (Bắt buộc)** |
+| **FR-AI-05** | Chấm điểm đa tiêu chí xác định (Deterministic Multi-Criteria Scoring) | Core | **MUST (Bắt buộc)** |
+| **FR-AI-06** | Xếp hạng ứng viên tự động & Quy tắc giải quyết đồng điểm (Tie-breaking) | Core | **MUST (Bắt buộc)** |
+| **FR-AI-07** | Báo cáo lý giải đánh giá minh bạch (AI Rationale & Gap Analysis) | Core | **MUST (Bắt buộc)** |
+| **FR-AI-08** | Cơ chế Human-in-the-loop (AI chỉ khuyến nghị, con người ra quyết định) | Core | **MUST (Bắt buộc)** |
+| **FR-AI-09** | Xử lý lỗi trong pipeline AI và bảo toàn dữ liệu gốc (Failure Handling) | Core | **MUST (Bắt buộc)** |
+| **FR-AI-10** | Quản lý lưu trữ phiên bản chấm điểm & Metadata mô hình | Core | **MUST (Bắt buộc)** |
+| **FR-INT-01** | Tự động khởi tạo bộ câu hỏi phỏng vấn thích ứng cá nhân hóa | Advanced | **MAY (Mở rộng)** |
+| **FR-INT-02** | Phân loại câu hỏi phỏng vấn (Làm rõ nghi vấn, Kỹ năng, Tình huống) | Advanced | **MAY (Mở rộng)** |
+| **FR-INT-03** | Chỉnh sửa và xuất danh sách câu hỏi phỏng vấn ra PDF/Word | Advanced | **MAY (Mở rộng)** |
+| **FR-REP-01** | Dashboard thống kê tổng quan và trạng thái ứng viên | Core | **MUST (Bắt buộc)** |
+| **FR-REP-02** | Báo cáo phân tích chuyên sâu (Advanced Analytics) | Advanced | **MAY (Mở rộng)** |
 
 ---
 
-### Module 5: Chấm Điểm Tương Thích (Semantic Fit Scoring Engine)
-- **FR-SCORE-01 (Tính điểm đa chiều)**: Tính điểm tổng hợp (0–100%) giữa ứng viên và JD theo công thức trọng số:
-  - Điểm Kỹ năng (Skill Fit Score - 45%): Mức độ phủ của kỹ năng ứng viên trên danh mục kỹ năng yêu cầu.
-  - Điểm Kinh nghiệm (Experience Score - 35%): So khớp số năm kinh nghiệm và mức độ phù hợp của các dự án đã làm.
-  - Điểm Nghiệp vụ & Học vấn (Domain & Education Fit - 20%): Ngành nghề tương đồng và bằng cấp.
-- **FR-SCORE-02 (Giải trình điểm số)**: Trả về đoạn văn giải thích lý do đạt/không đạt điểm, liệt kê rõ các kỹ năng thiếu hụt (Skill Gaps).
+## 2. Chi Tiết Các Yêu Cầu Chức Năng Cốt Lõi
 
----
+### 2.1. Quản lý Người dùng & Hệ thống (User Management)
+* **[FR-USER-01] [MUST] Đăng nhập & Xác thực**: Hệ thống PHẢI hỗ trợ đăng nhập qua Email/Password bảo mật. Mật khẩu được mã hóa băm bằng `bcrypt` trước khi lưu trữ vào MongoDB.
+* **[FR-USER-02] [MUST] Phân quyền vai trò (RBAC)**: Hệ thống PHẢI thiết lập và gán các quyền hạn truy cập tương ứng với 4 nhóm vai trò: `Admin`, `HR Manager`, `Recruiter`, và `Hiring Manager`.
+* **[FR-USER-03] [MUST] Quản lý nhật ký hoạt động (Audit Trail)**: Hệ thống PHẢI ghi lại lịch sử thao tác của người dùng trên dữ liệu ứng viên và điều chỉnh cấu hình AI với các trường tối thiểu: `userId`, `timestamp`, `action`, `entity`, `entityId`, `oldValue`, `newValue`.
 
-### Module 6: Sinh Câu Hỏi Phỏng Vấn & Đề Kiểm Tra Năng Lực (Interview & Assessment Gen)
-- **FR-INT-01 (Sinh câu hỏi phỏng vấn thích ứng)**: Tạo 5-10 câu hỏi kỹ thuật xoay quanh điểm yếu phát hiện trong quá trình so khớp và đào sâu vào các dự án lớn ứng viên từng đảm nhiệm.
-- **FR-INT-02 (Gợi ý đáp án & Thang điểm)**: Cung cấp đáp án mẫu và tiêu chí chấm điểm từ 1-5 cho từng câu hỏi.
-- **FR-ASSESS-01 (Sinh đề kiểm tra kỹ thuật)**: Tạo các bài tập lập trình hoặc câu hỏi tình huống thiết kế hệ thống tương ứng với cấp bậc ứng viên.
+### 2.2. Quản lý Tin tuyển dụng & JD (Job Management)
+* **[FR-JOB-01] [MUST] Quản lý Mô tả Công việc (JD)**: Hệ thống PHẢI cho phép tạo mới, chỉnh sửa, lưu trữ và xuất bản các tin tuyển dụng.
+* **[FR-JOB-02] [MUST] Trích xuất tiêu chí JD tự động bằng AI**: Khi một JD được tải lên hoặc nhập vào, mô-đun AI PHẢI tự động trích xuất các thông tin cấu trúc: Kỹ năng cứng (Hard skills), Kỹ năng mềm (Soft skills), Số năm kinh nghiệm tối thiểu, Trình độ học vấn, và Bằng cấp/Chứng chỉ liên quan.
+* **[FR-JOB-03] [MUST] Tùy chỉnh trọng số đánh giá**: Hệ thống PHẢI cho phép HR điều chỉnh thủ công trọng số (weight) dạng thập phân từ 0.0 đến 1.0 giữa các tiêu chí: Kỹ năng ($W_{\text{skill}}$), Kinh nghiệm ($W_{\text{exp}}$), Học vấn ($W_{\text{edu}}$), Chứng chỉ ($W_{\text{cert}}$). Tổng các trọng số PHẢI bằng 1.0.
+
+### 2.3. Quản lý Ứng viên & Hồ sơ (Candidate Management)
+* **[FR-CAND-01] [MUST] Tải lên CV**: Cho phép Recruiter tải lên tệp CV đơn lẻ (PDF/DOCX, dung lượng tối đa 5MB).
+* **[FR-CAND-02] [MUST] Quản lý hồ sơ ứng viên**: Cho phép xem chi tiết, cập nhật thông tin cá nhân và lịch sử làm việc của ứng viên.
+* **[FR-CAND-03] [MUST] Quản lý trạng thái**: Cho phép cập nhật trạng thái ứng viên theo chuỗi pipeline: `NEW` $\rightarrow$ `SCREENING` $\rightarrow$ `SHORTLISTED` $\rightarrow$ `INTERVIEW` $\rightarrow$ `OFFER` $\rightarrow$ `HIRED` / `REJECTED`.
+* **[FR-CAND-04] [MUST] Xem CV**: Cho phép truy cập xem trực tiếp (inline streaming) hoặc tải tệp CV gốc.
+* **[FR-CAND-05] [MAY] Batch CV Upload**: Hỗ trợ tải lên và xử lý bất đồng bộ đồng thời nhiều hồ sơ CV.
+* **[FR-CAND-06] [MUST] Recruiter Review & Decision**: Hệ thống PHẢI cho phép Recruiter/HR xem xét kết quả phân tích AI, ghi nhận đánh giá chuyên môn và cập nhật quyết định xử lý ứng viên.
+
+### 2.4. Mô-đun AI Sàng lọc Hồ sơ (AI-Assisted Candidate Screening)
+* **[FR-AI-01] [MUST] Trích xuất văn bản (OCR)**: Tiếp nhận và trích xuất nội dung văn bản từ CV qua các thư viện chuyên dụng (`pdf-parse`, `mammoth`, `tesseract.js`).
+* **[FR-AI-02] [MUST] Bóc tách cấu trúc CV**: Sử dụng NLP/LLM để phân tích và chuẩn hóa văn bản CV thành đối tượng JSON tuân thủ JSON Schema (Thông tin cá nhân, Học vấn, Lịch sử làm việc, Dự án, Kỹ năng, Chứng chỉ).
+* **[FR-AI-03] [MUST] Semantic Matching**: Biểu diễn yêu cầu tuyển dụng và CV dưới dạng vector qua mô hình Embedding, sau đó đo độ tương đồng ngữ nghĩa bằng Cosine Similarity.
+* **[FR-AI-04] [MUST] Nhận diện kỹ năng tương đương**: Nhận diện các biến thể tên gọi công nghệ (ví dụ: `React.js` $\leftrightarrow$ `ReactJS`, `REST API` $\leftrightarrow$ `RESTful API`).
+* **[FR-AI-04a] [MUST] Phân loại mức độ so khớp theo ngưỡng (Thresholds)**:
+  * $\text{Similarity} \ge 0.90$: **Exact Match** (Hệ số: 1.0).
+  * $0.75 \le \text{Similarity} < 0.90$: **Semantic Match** (Hệ số: 0.8).
+  * $0.50 \le \text{Similarity} < 0.75$: **Partial Match** (Hệ số: 0.5).
+  * $\text{Similarity} < 0.50$: **Missing** (Hệ số: 0.0).
+* **[FR-AI-05] [MUST] Công thức tính Overall Match Score**:
+  $$\text{Overall Score} = S_{\text{skill}} \times W_{\text{skill}} + S_{\text{exp}} \times W_{\text{exp}} + S_{\text{edu}} \times W_{\text{edu}} + S_{\text{cert}} \times W_{\text{cert}}$$
+  Mọi tính toán nội bộ duy trì độ chính xác 4 chữ số thập phân, kết quả hiển thị làm tròn đến 2 chữ số thập phân.
+* **[FR-AI-06] [MUST] Xếp hạng ứng viên & Tie-breaking**: Tự động sắp xếp danh sách ứng viên theo điểm giảm dần. Khi đồng điểm, ưu tiên theo thứ tự: $\text{Experience Score} > \text{Skill Score} > \text{Thời gian nộp sớm hơn}$.
+* **[FR-AI-07] [MUST] Lý giải đánh giá (AI Rationale)**: Tự động tạo báo cáo tóm tắt giải thích các yếu tố ảnh hưởng đến điểm số, chỉ rõ kỹ năng đáp ứng và kỹ năng thiếu hụt. LLM không được tự ý suy diễn hoặc thay đổi điểm số định lượng đã tính.
+* **[FR-AI-08] [MUST] Human-in-the-loop**: AI chỉ đóng vai trò khuyến nghị; quyền quyết định tuyển dụng thuộc về Recruiter/HR.
+* **[FR-AI-09] [MUST] AI Failure Handling**: Khi quá trình OCR, LLM hoặc Scoring gặp lỗi, hệ thống phải ghi nhận lỗi, bảo toàn CV gốc và không được tạo điểm số rác.
+* **[FR-AI-10] [MUST] Quản lý lưu trữ kết quả phân tích AI**: Lưu trữ đầy đủ metadata: `scoringVersion`, `scoringWeights`, và `modelIdentifiers`.
