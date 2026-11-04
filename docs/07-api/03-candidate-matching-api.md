@@ -25,15 +25,18 @@
   "statusCode": 200,
   "data": {
     "totalScore": 91,
+    "rankingIndex": 1,
     "breakdown": {
+      "semanticScore": 89,
       "skillScore": 95,
       "experienceScore": 88,
-      "domainScore": 90
+      "educationScore": 92
     },
     "skillAnalysis": {
       "matchedSkills": ["TypeScript", "NestJS", "MongoDB", "Docker"],
-      "missingMustHave": [],
-      "missingNiceToHave": ["Kubernetes"]
+      "partialSkills": ["PostgreSQL (tương đương MySQL trong JD)"],
+      "missingRequired": [],
+      "missingPreferred": ["Kubernetes"]
     },
     "rationale": "Ứng viên rất mạnh về Backend NestJS, đáp ứng trọn vẹn yêu cầu công việc. Cần kiểm tra thêm về quy mô triển khai hạ tầng."
   }

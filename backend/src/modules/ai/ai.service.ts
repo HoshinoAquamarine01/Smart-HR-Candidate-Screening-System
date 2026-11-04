@@ -96,4 +96,49 @@ export class AiService {
   async generateCompletion(prompt: string, schema?: object): Promise<any> {
     return { status: 'stub', promptReceived: prompt };
   }
+
+ 
+  private readonly embeddingCache = new Map<string, number[]>();
+
+  async generateEmbedding(text: string): Promise<number[]> {
+    if (!text || text.trim() === '') {
+      return [];
+    }
+
+    const key = text.trim().toLowerCase();
+    if (this.embeddingCache.has(key)) {
+      return this.embeddingCache.get(key)!;
+    }
+
+    let vector: number[] = [];
+
+   
+    if (this.geminiProvider.isAvailable()) {
+      try {
+        vector = await this.geminiProvider.generateEmbedding(text);
+      } catch (err: any) {
+        this.logger.warn(`Gemini embedding failed: ${err.message}. Trying OpenAI...`);
+      }
+    }
+
+  
+    if ((!vector || vector.length === 0) && this.openaiProvider.isAvailable()) {
+      try {
+        vector = await this.openaiProvider.generateEmbedding(text);
+      } catch (err: any) {
+        this.logger.warn(`OpenAI embedding failed: ${err.message}. Falling back to Mock...`);
+      }
+    }
+
+   
+    if (!vector || vector.length === 0) {
+      vector = await this.mockAiProvider.generateEmbedding(text);
+    }
+
+    if (vector && vector.length > 0) {
+      this.embeddingCache.set(key, vector);
+    }
+
+    return vector;
+  }
 }

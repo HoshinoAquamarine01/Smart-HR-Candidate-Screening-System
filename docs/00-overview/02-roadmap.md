@@ -42,10 +42,12 @@ gantt
 - Tích hợp LLM Multi-Provider: Google Gemini 2.0 Flash làm mô hình bóc tách chính, OpenAI GPT-4o-mini làm fallback và Mock Provider chạy offline.
 - Tự động đồng bộ thông tin trích xuất (`fullName`, `email`, `phone`, `skills`, `workHistory`) sang bảng `Candidates`.
 
-### Giai đoạn 3: Động Cơ Chấm Điểm & Khớp Nối Ứng Viên (Hiện tại ⏳)
+### Giai đoạn 3: Động Cơ Chấm Điểm & Khớp Nối Ứng Viên (Hiện tại - Tuần 11 ⏳)
 - Xây dựng module quản lý Mô tả công việc (Job Descriptions - JD).
-- Tính toán điểm số tương thích (Fit Score 0-100%) theo 3 chiều: Kỹ năng kỹ thuật, Cấp bậc kinh nghiệm, và Miền nghiệp vụ.
+- Triển khai **Hybrid Matching Engine** tích hợp giữa Semantic Matching (Vector Embedding + Cosine Similarity) và Skill-based Matching (Required/Preferred Taxonomy).
+- Tính toán điểm số tương thích (Fit Score 0-100%) theo 4 chiều: $S_{\text{semantic}}, S_{\text{skill}}, S_{\text{exp}}, S_{\text{edu}}$.
 - Cung cấp bảng phân tích lý giải điểm số (Rationale & Skill Gap Analysis).
+- Đánh giá chất lượng xếp hạng ứng viên theo chỉ số Precision@K, Recall@K, và NDCG@K.
 
 ### Giai đoạn 4: Bộ Sinh Câu Hỏi Phỏng Vấn & Đề Kiểm Tra Năng Lực (Sắp tới 🚀)
 - Sinh danh sách câu hỏi phỏng vấn theo ngữ cảnh cá nhân hóa của từng ứng viên.

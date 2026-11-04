@@ -66,4 +66,27 @@ export class GeminiProvider implements IAiProvider {
       confidenceScore: 95,
     };
   }
+
+  
+  async generateEmbedding(text: string): Promise<number[]> {
+    if (!this.client || !text || text.trim() === '') {
+      return [];
+    }
+
+    try {
+      const response = await this.client.models.embedContent({
+        model: 'text-embedding-004',
+        contents: text.trim(),
+      });
+
+      const values =
+        (response as any).embedding?.values ||
+        (response as any).embeddings?.[0]?.values ||
+        [];
+      return values;
+    } catch (err: any) {
+      this.logger.warn(`Gemini embedContent warning: ${err.message}`);
+      return [];
+    }
+  }
 }

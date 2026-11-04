@@ -21,3 +21,20 @@ Chào mừng bạn đến với trung tâm tài liệu kỹ thuật hoàn chỉn
 | **10** | [10-testing/](file:///d:/Smart-HR-Candidate-Screening-System/docs/10-testing/) | Chiến lược kiểm thử, danh mục test cases & benchmark | [00-test-strategy.md](file:///d:/Smart-HR-Candidate-Screening-System/docs/10-testing/00-test-strategy.md)<br>[01-test-cases.md](file:///d:/Smart-HR-Candidate-Screening-System/docs/10-testing/01-test-cases.md)<br>[02-ai-accuracy-benchmark.md](file:///d:/Smart-HR-Candidate-Screening-System/docs/10-testing/02-ai-accuracy-benchmark.md) |
 | **11** | [11-operations/](file:///d:/Smart-HR-Candidate-Screening-System/docs/11-operations/) | Vận hành sản xuất, khắc phục sự cố & tối ưu chi phí | [00-troubleshooting-guide.md](file:///d:/Smart-HR-Candidate-Screening-System/docs/11-operations/00-troubleshooting-guide.md)<br>[01-backup-recovery.md](file:///d:/Smart-HR-Candidate-Screening-System/docs/11-operations/01-backup-recovery.md)<br>[02-cost-optimization.md](file:///d:/Smart-HR-Candidate-Screening-System/docs/11-operations/02-cost-optimization.md) |
 | **12** | [12-release-notes/](file:///d:/Smart-HR-Candidate-Screening-System/docs/12-release-notes/) | Lịch sử phiên bản phát hành và nhật ký thay đổi | [00-version-history.md](file:///d:/Smart-HR-Candidate-Screening-System/docs/12-release-notes/00-version-history.md) |
+
+---
+
+## 🎓 Báo Cáo Nghiên Cứu Đề Tài Khoa Học & Khóa Luận (Research Thesis Synthesis)
+
+* [📘 RESEARCH_SYNTHESIS_REPORT.md](file:///d:/Smart-HR-Candidate-Screening-System/docs/RESEARCH_SYNTHESIS_REPORT.md): **Báo cáo tổng hợp cơ sở lý thuyết toàn diện dự án Smart HR từ Tuần 1 đến Tuần 11 (trích xuất và đồng bộ từ tài liệu 85 trang `Tìm hiểu đề tài.pdf`)**.
+
+---
+
+## 🚀 Kế Hoạch Triển Khai Chuyên Sâu Các Module Lõi (Implementation Plans)
+
+* [📄 OCR_MODULE_PLAN.md](file:///d:/Smart-HR-Candidate-Screening-System/docs/OCR_MODULE_PLAN.md): Kế hoạch triển khai Module OCR trích xuất văn bản thô (Tesseract / Surya).
+* [🧠 LLM_CV_EXTRACTION_PLAN.md](file:///d:/Smart-HR-Candidate-Screening-System/docs/LLM_CV_EXTRACTION_PLAN.md): Kế hoạch trích xuất thông tin CV có cấu trúc bằng LLM.
+* [⚡ AI_PARSER_OPTIMIZATION_PLAN.md](file:///d:/Smart-HR-Candidate-Screening-System/docs/AI_PARSER_OPTIMIZATION_PLAN.md): Kế hoạch tối ưu hóa tốc độ, token và độ chính xác của AI Parser.
+* [🎯 MATCHING_ENGINE_PLAN.md](file:///d:/Smart-HR-Candidate-Screening-System/docs/MATCHING_ENGINE_PLAN.md): **[TUẦN 11] Kế hoạch phát triển Matching Engine & Thuật toán so khớp điểm CV - JD (Semantic + Skill-based + XAI)**.
+* [📊 WEEK_11_MATCHING_ENGINE_IMPLEMENTATION.md](file:///d:/Smart-HR-Candidate-Screening-System/docs/WEEK_11_MATCHING_ENGINE_IMPLEMENTATION.md): **[BÁO CÁO MÃ NGUỒN] Chi tiết mã nguồn, thuật toán đã code và kết quả chạy test suite (26/26 PASS)**.
+

@@ -227,4 +227,51 @@ export class MockAiProvider implements IAiProvider {
       confidenceScore: 85,
     };
   }
+
+ 
+  async generateEmbedding(text: string): Promise<number[]> {
+   
+    const dimensions = 128;
+    const vector = new Array(dimensions).fill(0);
+    if (!text || text.trim() === '') {
+      return vector;
+    }
+
+    const clean = text.toLowerCase().replace(/[^a-z0-9\s]/g, ' ');
+    const tokens = clean.split(/\s+/).filter(t => t.length > 0);
+
+    for (let i = 0; i < tokens.length; i++) {
+      const token = tokens[i];
+      let hash = 0;
+      for (let j = 0; j < token.length; j++) {
+        hash = (hash << 5) - hash + token.charCodeAt(j);
+        hash |= 0;
+      }
+      const index = Math.abs(hash) % dimensions;
+      vector[index] += 1;
+
+      if (i < tokens.length - 1) {
+        const bigram = `${token}_${tokens[i + 1]}`;
+        let biHash = 0;
+        for (let j = 0; j < bigram.length; j++) {
+          biHash = (biHash << 5) - biHash + bigram.charCodeAt(j);
+          biHash |= 0;
+        }
+        const biIndex = Math.abs(biHash) % dimensions;
+        vector[biIndex] += 1.5;
+      }
+    }
+
+    let sumSquares = 0;
+    for (const val of vector) {
+      sumSquares += val * val;
+    }
+    const norm = Math.sqrt(sumSquares);
+    if (norm > 0) {
+      for (let k = 0; k < vector.length; k++) {
+        vector[k] = Math.round((vector[k] / norm) * 10000) / 10000;
+      }
+    }
+    return vector;
+  }
 }
