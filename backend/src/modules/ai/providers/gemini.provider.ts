@@ -89,4 +89,40 @@ export class GeminiProvider implements IAiProvider {
       return [];
     }
   }
+
+  async generateInterviewQuestions(prompt: string, systemInstruction: string): Promise<any> {
+    if (!this.client) {
+      throw new Error('GEMINI_API_KEY is missing or invalid.');
+    }
+
+    const response = await this.client.models.generateContent({
+      model: this.modelName,
+      contents: `${systemInstruction}\n\n${prompt}`,
+      config: {
+        responseMimeType: 'application/json',
+        temperature: 0.2,
+      },
+    });
+
+    const text = response.text ? response.text.trim() : '{}';
+    return JSON.parse(text);
+  }
+
+  async extractJdCriteria(prompt: string, systemInstruction: string): Promise<any> {
+    if (!this.client) {
+      throw new Error('GEMINI_API_KEY is missing or invalid.');
+    }
+
+    const response = await this.client.models.generateContent({
+      model: this.modelName,
+      contents: `${systemInstruction}\n\n${prompt}`,
+      config: {
+        responseMimeType: 'application/json',
+        temperature: 0.1,
+      },
+    });
+
+    const text = response.text ? response.text.trim() : '{}';
+    return JSON.parse(text);
+  }
 }

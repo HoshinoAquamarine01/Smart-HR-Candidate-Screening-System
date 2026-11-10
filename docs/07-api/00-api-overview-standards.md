@@ -53,3 +53,17 @@ Tất cả các endpoint trong hệ thống đều tuân thủ cấu trúc phong
 ```http
 Authorization: Bearer <access_token>
 ```
+
+---
+
+## 4. Danh Sách Các Tài Liệu Đặc Tả API Theo Phân Hệ
+
+1. [01-auth-api.md](file:///d:/Smart-HR-Candidate-Screening-System/docs/07-api/01-auth-api.md): Xác thực tài khoản, đăng ký, đăng nhập và phân quyền JWT.
+2. [02-cv-extraction-api.md](file:///d:/Smart-HR-Candidate-Screening-System/docs/07-api/02-cv-extraction-api.md): Tải lên tệp CV, bóc tách OCR và trích xuất cấu trúc LLM.
+3. [03-candidate-matching-api.md](file:///d:/Smart-HR-Candidate-Screening-System/docs/07-api/03-candidate-matching-api.md): Đối soát điểm số CV - JD, Semantic Matching và xếp hạng ứng viên.
+4. [04-interview-generation-api.md](file:///d:/Smart-HR-Candidate-Screening-System/docs/07-api/04-interview-generation-api.md): **[TUẦN 12] Khởi tạo bộ câu hỏi phỏng vấn thích ứng theo kiến trúc RAG, chỉnh sửa Human-in-the-loop và xuất phiếu phỏng vấn.**
+5. [05-jobs-api.md](file:///d:/Smart-HR-Candidate-Screening-System/docs/07-api/05-jobs-api.md): **Quản lý tin tuyển dụng (Jobs CRUD), AI bóc tách tiêu chí JD tự động và sinh vector embedding.**
+6. [06-candidates-api.md](file:///d:/Smart-HR-Candidate-Screening-System/docs/07-api/06-candidates-api.md): **Quản lý hồ sơ ứng viên 360°, tìm kiếm lọc đa tiêu chí (kỹ năng, điểm số, trạng thái phễu), và chuyển trạng thái Kanban.**
+7. [07-applications-api.md](file:///d:/Smart-HR-Candidate-Screening-System/docs/07-api/07-applications-api.md): **Quản lý đơn ứng tuyển, bảng điều khiển Kanban drag-and-drop và lịch sử kiểm toán quyết định tuyển dụng [FR-CAND-03].**
+8. [08-analytics-api.md](file:///d:/Smart-HR-Candidate-Screening-System/docs/07-api/08-analytics-api.md): **Báo cáo & thống kê tuyển dụng Dashboard, phân bố điểm số matching, phễu ứng viên và khoảng cách kỹ năng (Skill Gaps) [FR-REP-01].**
+

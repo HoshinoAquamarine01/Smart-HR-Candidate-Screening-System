@@ -5,7 +5,34 @@
 
 ---
 
-## [v0.3.0] - 2026-10-25 (Hiện tại)
+## [v0.5.0] - 2026-11-10 (Hiện tại)
+### 🚀 Tính Năng Mới
+- **Module Khởi Tạo Câu Hỏi Phỏng Vấn RAG (`InterviewsModule`)**:
+  - Tích hợp kiến trúc RAG 3 nguồn: Dữ liệu dự án từ CV, yêu cầu tiêu chuẩn từ Job Description, và Ngân hàng câu hỏi chuyên môn (**Domain Question Bank**).
+  - Tự động phân loại 4 nhóm câu hỏi chuẩn nghiệp vụ: `CLARIFICATION`, `TECHNICAL_DEEP_DIVE`, `SKILL_GAP`, `BEHAVIORAL_STAR`.
+  - Cung cấp tiêu chí đánh giá mấu chốt (`expectedKeyPoints`) và bareme chấm điểm 3 mức (`sampleRubric`: *1-2đ Chưa đạt*, *3-4đ Đạt*, *5đ Xuất sắc*).
+  - Trích xuất dẫn chứng cụ thể từ CV (`contextFromCV`) gán vào từng câu hỏi để triệt tiêu ảo giác (hallucination).
+- **Cơ Chế Caching Thông Minh**: Tự động cache kết quả đã sinh trong MongoDB collection `interview_questions`, hỗ trợ cờ `regenerate: true` để tạo lại khi cần.
+- **Tương Tác Human-In-The-Loop & Xuất Phiếu Phỏng Vấn**:
+  - API `PUT /api/v1/interviews/:id` hỗ trợ Recruiter chỉnh sửa câu hỏi, cập nhật trạng thái `REVIEWED`, ghi chú nhận xét và chấm điểm thực tế `scoreGiven` (1–5).
+  - API `POST /api/v1/interviews/:id/export` xuất phiếu phỏng vấn chuẩn hóa sang định dạng Markdown, Plain Text hoặc JSON.
+- **Bộ Kiểm Thử Tự Động**: Bổ sung `npm run test:interview` đạt **34/34 PASS (100%)**.
+
+---
+
+## [v0.4.0] - 2026-11-08
+### 🚀 Tính Năng Mới
+- **Động Cơ So Khớp & Chấm Điểm Ứng Viên (`ScreeningModule`)**:
+  - Phát triển **Matching Engine** đa tiêu chí kết hợp giữa So khớp ngữ nghĩa (Semantic Vector Matching qua Cosine Similarity) và So khớp kỹ năng định lượng (Skill-based Matching).
+  - **4-Tier Skill Taxonomy & Normalization**: Nhận diện Khớp hoàn toàn (Exact), Khớp từ đồng nghĩa (Alias), Khớp mờ sai chính tả (Levenshtein Fuzzy $\ge 0.80$), Khớp họ hàng liên đới (Related Taxonomy), và Vector Semantic Matching cho kỹ năng mới ngoài từ điển.
+  - **Mô Hình Tính Điểm Trọng Số (Weighted Scoring)**: Tổng hợp điểm từ 4 trụ cột: $S_{\text{semantic}}, S_{\text{skill}}, S_{\text{exp}}, S_{\text{edu}}$.
+  - **Hard Gate Constraint**: Tự động áp dụng mức phạt -20% nếu ứng viên thiếu $>50\%$ kỹ năng bắt buộc.
+  - **Khung Đo Lường Hiệu Năng Thuật Toán**: Đánh giá thứ tự xếp hạng ứng viên bằng **Precision@K**, **Recall@K**, và **NDCG@K**.
+  - **Bộ Kiểm Thử Tự Động**: Bổ sung `npm run test:matching` đạt **28/28 PASS (100%)**.
+
+---
+
+## [v0.3.0] - 2026-10-25
 ### 🚀 Tính Năng Mới
 - **Tích Hợp LLM Semantic Extraction**: Bổ sung `AiModule` tích hợp chính thức Google Gemini 2.0 Flash (`@google/genai`) và OpenAI GPT-4o-mini (`openai`).
 - **Ép Chuẩn JSON Schema Tuyệt Đối**: Áp dụng Gemini `responseSchema` và Zod Schema để đảm bảo 100% kết quả trả về đúng `StandardCvProfile`.

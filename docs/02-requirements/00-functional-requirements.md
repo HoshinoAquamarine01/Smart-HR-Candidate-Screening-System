@@ -79,3 +79,26 @@
 * **[FR-AI-08] [MUST] Human-in-the-loop**: AI chỉ đóng vai trò khuyến nghị; quyền quyết định tuyển dụng thuộc về Recruiter/HR.
 * **[FR-AI-09] [MUST] AI Failure Handling**: Khi quá trình OCR, LLM hoặc Scoring gặp lỗi, hệ thống phải ghi nhận lỗi, bảo toàn CV gốc và không được tạo điểm số rác.
 * **[FR-AI-10] [MUST] Quản lý lưu trữ kết quả phân tích AI**: Lưu trữ đầy đủ metadata: `scoringVersion`, `scoringWeights`, và `modelIdentifiers`.
+
+### 2.4. Khởi tạo Câu hỏi Phỏng vấn Thông minh (AI Interview Generation)
+* **[FR-INT-01] [MAY] Khởi tạo bộ câu hỏi phỏng vấn thích ứng cá nhân hóa (Adaptive Interview Generation)**:
+  - Hệ thống sử dụng kiến trúc RAG kết hợp LLM để tự động sinh bộ câu hỏi phỏng vấn dựa trên: (1) Thông tin trích xuất từ CV ứng viên, (2) Yêu cầu từ Job Description (JD), và (3) Kết quả phân tích khoảng cách kỹ năng (Skill Gap Analysis) từ Matching Engine.
+  - Mỗi câu hỏi phải gắn liền với ngữ cảnh thực tế (evidence/context) từ hồ sơ ứng viên nhằm hạn chế ảo giác (hallucination).
+* **[FR-INT-02] [MAY] Phân loại câu hỏi đa chiều & Cung cấp tiêu chí đánh giá**:
+  - Tự động phân loại câu hỏi thành các nhóm:
+    1. `Clarification / Verification`: Làm rõ thông tin mập mờ, khoảng trống thời gian hoặc công nghệ liệt kê chưa rõ vai trò.
+    2. `Technical Deep-dive`: Đào sâu chuyên môn vào các công nghệ trọng tâm mà ứng viên claim có kinh nghiệm.
+    3. `Skill Gap Probing`: Đánh giá nhanh các kỹ năng JD yêu cầu nhưng CV còn thiếu hụt hoặc chỉ đáp ứng một phần.
+    4. `Behavioral & Situational (STAR)`: Câu hỏi tình huống theo khung năng lực (Situation, Task, Action, Result).
+  - Đi kèm mỗi câu hỏi PHẢI có: Độ khó (`Easy`, `Medium`, `Hard`), Mục đích câu hỏi (`purpose`), Điểm mấu chốt mong đợi (`expectedKeyPoints`), và Bareme gợi ý chấm điểm mẫu (1 điểm - 3 điểm - 5 điểm).
+* **[FR-INT-03] [MAY] Tương tác Human-in-the-loop & Xuất tài liệu phỏng vấn**:
+  - Cho phép Recruiter / Hiring Manager xem trước, chỉnh sửa nội dung, thay đổi độ khó, thêm câu hỏi tùy chỉnh, hoặc xóa câu hỏi không mong muốn trước buổi phỏng vấn.
+  - Hỗ trợ xuất phiếu câu hỏi phỏng vấn ra định dạng PDF / Word hoặc sao chép nhanh vào clipboard.
+
+### 2.5. Báo cáo & Phân tích Tuyển dụng (Reporting & Analytics)
+* **[FR-REP-01] [MUST] Dashboard thống kê tổng quan**:
+  - Cung cấp giao diện trực quan hiển thị các chỉ số tuyển dụng cơ bản: Tổng số hồ sơ tiếp nhận, số lượng theo từng trạng thái pipeline (`NEW`, `SCREENING`, `INTERVIEW`, `OFFER`, `HIRED`, `REJECTED`), phân bố điểm số phù hợp (Score distribution).
+* **[FR-REP-02] [MAY] Báo cáo phân tích chuyên sâu (Advanced Analytics)**:
+  - Thống kê tỷ lệ chuyển đổi qua từng phễu tuyển dụng (Conversion rate).
+  - Thống kê các kỹ năng ứng viên còn thiếu hụt nhiều nhất theo từng vị trí (Skill gap heatmap).
+  - Đánh giá thời gian trung bình từ khi nộp đơn đến khi hoàn thành sàng lọc (Time-to-screen).

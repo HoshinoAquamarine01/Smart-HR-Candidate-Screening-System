@@ -97,7 +97,104 @@ export class AiService {
     return { status: 'stub', promptReceived: prompt };
   }
 
- 
+
+  async generateInterviewQuestions(
+    prompt: string,
+    systemInstruction: string,
+    fallbackContext?: any,
+  ): Promise<{ questions: any[] }> {
+    let result: any = null;
+
+    if (this.geminiProvider.isAvailable()) {
+      try {
+        this.logger.log('Generating interview questions using Google Gemini...');
+        result = await (this.geminiProvider as any).generateInterviewQuestions(
+          prompt,
+          systemInstruction,
+        );
+      } catch (err: any) {
+        this.logger.warn(`Gemini interview generation failed: ${err.message}. Trying OpenAI...`);
+      }
+    }
+
+  
+    if (!result && this.openaiProvider.isAvailable()) {
+      try {
+        this.logger.log('Generating interview questions using OpenAI...');
+        result = await (this.openaiProvider as any).generateInterviewQuestions(
+          prompt,
+          systemInstruction,
+        );
+      } catch (err: any) {
+        this.logger.warn(`OpenAI interview generation failed: ${err.message}. Falling back to Mock...`);
+      }
+    }
+
+   
+    if (!result) {
+      this.logger.log('Generating interview questions using MockAiProvider (deterministic fallback)...');
+      result = await this.mockAiProvider.generateInterviewQuestions(fallbackContext || {});
+    }
+
+    if (Array.isArray(result)) {
+      return { questions: result };
+    }
+    if (result && Array.isArray(result.questions)) {
+      return { questions: result.questions };
+    }
+
+    return { questions: [] };
+  }
+
+  
+  async extractJdCriteria(rawDescription: string, jobTitle?: string): Promise<any> {
+    const systemPrompt = `
+You are an expert HR and Technical Recruiter.
+Analyze the following Job Description and extract structured evaluation criteria in strict JSON format:
+{
+  "requiredSkills": ["skill1", "skill2"],
+  "preferredSkills": ["skill1", "skill2"],
+  "minExperienceYears": 2,
+  "requiredEducation": "Degree requirements",
+  "responsibilities": ["item1", "item2"],
+  "seniorityLevel": "INTERN" | "JUNIOR" | "MIDDLE" | "SENIOR" | "LEAD"
+}
+`;
+    const userPrompt = `Job Title: ${jobTitle || 'N/A'}\n\nJob Description:\n${rawDescription}`;
+
+    let result: any = null;
+
+    
+    if (this.geminiProvider.isAvailable()) {
+      try {
+        this.logger.log('Extracting JD criteria using Google Gemini...');
+        result = await (this.geminiProvider as any).extractJdCriteria(userPrompt, systemPrompt);
+      } catch (err: any) {
+        this.logger.warn(`Gemini JD extraction failed: ${err.message}. Trying OpenAI...`);
+      }
+    }
+
+   
+    if (!result && this.openaiProvider.isAvailable()) {
+      try {
+        this.logger.log('Extracting JD criteria using OpenAI...');
+        result = await (this.openaiProvider as any).extractJdCriteria(userPrompt, systemPrompt);
+      } catch (err: any) {
+        this.logger.warn(`OpenAI JD extraction failed: ${err.message}. Falling back to Mock...`);
+      }
+    }
+
+    if (!result) {
+      this.logger.log('Extracting JD criteria using MockAiProvider (heuristic fallback)...');
+      result = await this.mockAiProvider.extractJdCriteria(rawDescription, jobTitle);
+    }
+
+    return result;
+  }
+
+  // --------------------------------------------------------------------------
+  // In-Memory Embedding Cache (reduces latency & costs for repeated queries)
+  // --------------------------------------------------------------------------
   private readonly embeddingCache = new Map<string, number[]>();
 
   async generateEmbedding(text: string): Promise<number[]> {

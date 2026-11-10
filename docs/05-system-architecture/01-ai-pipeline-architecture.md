@@ -42,6 +42,25 @@ flowchart TD
         Q --> T[CvService: cvModel create]
         T -->|parsedData & metadata| U[(Cvs Collection)]
     end
+
+    subgraph Step4 ["Giai đoạn 4: Hybrid Matching & Scoring (Tuần 11)"]
+        U --> V[MatchingEngineService]
+        JD[(Jobs Collection)] --> V
+        V --> W[Semantic Vector Cosine Similarity]
+        V --> X[4-Tier Skill Taxonomy: Exact/Alias/Fuzzy/Related]
+        V --> Y[Hard Gate Penalty: -20% nếu thiếu >50% kỹ năng]
+        W & X & Y --> Z[(ScreeningResults Collection)]
+    end
+
+    subgraph Step5 ["Giai đoạn 5: RAG AI Interview Generation (Tuần 12)"]
+        Z -->|Bóc tách missingSkills & gaps| AA[InterviewsService RAG Pipeline]
+        U -->|Dự án & contextFromCV| AA
+        JD -->|Tiêu chí vị trí| AA
+        QB[(Domain Question Bank)] -->|Semantic Vector Cosine Search| AA
+        AA --> AB[Prompt Builder: Fabric Identity & STAR Schema]
+        AB --> AC{AiService: Gemini 2.0 Flash / OpenAI Fallback}
+        AC --> AD[(InterviewQuestions Collection: 4 Nhóm & Rubric 1-3-5)]
+    end
 ```
 
 ---

@@ -84,11 +84,14 @@ erDiagram
 
     INTERVIEWS {
         ObjectId _id PK
+        ObjectId applicationId FK "Tham chiếu Applications"
         ObjectId candidateId FK "Tham chiếu Candidates"
         ObjectId jobId FK "Tham chiếu Jobs"
-        array generatedQuestions "Danh sách câu hỏi thích ứng kèm rubric"
-        string status "scheduled | in_progress | completed"
+        array questions "Danh sách câu hỏi 4 nhóm kèm contextFromCV và rubric 1-3-5"
+        string status "GENERATED | REVIEWED | EXPORTED"
+        ObjectId createdBy FK "Tham chiếu Users (tùy chọn)"
         date createdAt
+        date updatedAt
     }
 
     ASSESSMENTS {

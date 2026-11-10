@@ -1,19 +1,32 @@
-import { IsString, IsEmail, IsOptional, MinLength } from 'class-validator';
+import { IsArray, IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateCandidateDto {
+  @IsNotEmpty({ message: 'Họ tên ứng viên không được để trống' })
   @IsString()
-  @IsOptional()
-  fullName?: string;
+  fullName: string;
 
-  @IsEmail()
   @IsOptional()
+  @IsEmail({}, { message: 'Định dạng email không hợp lệ' })
   email?: string;
 
-  @IsString()
   @IsOptional()
+  @IsString()
   phone?: string;
 
-  @IsString({ each: true })
   @IsOptional()
+  @IsString()
+  location?: string;
+
+  @IsOptional()
+  @IsString()
+  currentTitle?: string;
+
+  @IsOptional()
+  @IsString()
+  summary?: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
   skills?: string[];
 }

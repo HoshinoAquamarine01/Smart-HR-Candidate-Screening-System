@@ -7,6 +7,9 @@ import { ScreeningModule } from './modules/screening/screening.module';
 import { InterviewsModule } from './modules/interviews/interviews.module';
 import { AssessmentsModule } from './modules/assessments/assessments.module';
 import { CandidatesModule } from './modules/candidates/candidates.module';
+import { JobsModule } from './modules/jobs/jobs.module';
+import { ApplicationsModule } from './modules/applications/applications.module';
+import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './modules/auth/auth.module';
@@ -34,6 +37,9 @@ import configuration from './config/configuration';
     InterviewsModule,
     AssessmentsModule,
     CandidatesModule,
+    JobsModule,
+    ApplicationsModule,
+    AnalyticsModule,
     AuthModule,
     UsersModule,
     OcrModule,

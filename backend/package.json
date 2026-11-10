@@ -24,7 +24,12 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "test:matching": "ts-node -r tsconfig-paths/register test/test-matching-engine.ts"
+    "test:matching": "ts-node -r tsconfig-paths/register test/test-matching-engine.ts",
+    "test:interview": "ts-node -r tsconfig-paths/register test/test-interview-generation.ts",
+    "test:jobs": "ts-node -r tsconfig-paths/register test/test-jobs-module.ts",
+    "test:candidates": "ts-node -r tsconfig-paths/register test/test-candidates-module.ts",
+    "test:applications": "ts-node -r tsconfig-paths/register test/test-applications-module.ts",
+    "test:analytics": "ts-node -r tsconfig-paths/register test/test-analytics-module.ts"
   },
   "dependencies": {
     "@google/genai": "^2.31.0",

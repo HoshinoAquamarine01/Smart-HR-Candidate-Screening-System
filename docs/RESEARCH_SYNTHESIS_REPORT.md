@@ -279,6 +279,39 @@ $$\text{Matching Score} = w_1 S_{\text{semantic}} + w_2 S_{\text{skill}} + w_3 S
 
 ---
 
+## 📅 TUẦN 12 (09/11/2026 - 15/11/2026)
+### Nghiên Cứu Retrieval-Augmented Generation (RAG) & Sinh Câu Hỏi Phỏng Vấn (AI Interview Generation)
+
+### 1. Mục tiêu và Cơ sở lý thuyết RAG
+* **Vấn đề cốt lõi**: Việc dùng LLM thuần túy (vanilla prompt) để tạo câu hỏi phỏng vấn dễ gặp các nhược điểm:
+  1. Câu hỏi chung chung, thiếu căn cứ cụ thể từ dự án trong CV (low groundedness / hallucination).
+  2. Không bám sát các khoảng trống kỹ năng (skill gaps) đã phát hiện trong bước Screening.
+  3. Thiếu ngân hàng câu hỏi chuẩn ngành và bareme đánh giá (rubric) phục vụ người phỏng vấn.
+* **Nguyên lý RAG kết hợp**:
+  - **Data Source**: Trích xuất có chọn lọc từ CV Chunks, JD Requirements, và Ngân hàng câu hỏi chuẩn (Competency & Tech Question Bank).
+  - **Chunking & Indexing**: Chia nhỏ theo cấu trúc ngữ nghĩa (Experience bullet points, Projects, Tech Stacks).
+  - **Retriever**: Sử dụng Vector Search (Cosine Similarity trên vector embeddings) và Filter theo metadata (role, seniority, gap tags).
+  - **Generation**: LLM tổng hợp Context đã được retrieve để sinh ra bộ câu hỏi cấu trúc cao (Structured JSON).
+
+### 2. Quy trình 7 bước RAG cho AI Interview Generation
+1. **Bước 1 (Input Aggregation)**: Tiếp nhận dữ liệu CV đã bóc tách, Job Description, và `ScreeningResult` (đặc biệt là danh sách `missingSkills`, `partiallyMatchedSkills`).
+2. **Bước 2 (Document Chunking)**: Chia nhỏ thông tin CV thành các micro-chunks có ngữ cảnh rõ ràng (Role, Công nghệ, Nhiệm vụ cụ thể).
+3. **Bước 3 (Vector Embedding)**: Tạo embedding cho các chunks thông qua `text-embedding-004` / `text-embedding-3-small`.
+4. **Bước 4 (Context & Question Retrieval)**: Truy xuất các chunks liên quan mật thiết đến yêu cầu JD và các câu hỏi mẫu tương ứng từ Knowledge Base.
+5. **Bước 5 (LLM Adaptive Generation)**: LLM đóng vai trò Senior Interviewer tạo ra bộ câu hỏi 4 nhóm (Clarification, Technical Deep-dive, Skill Gap, Behavioral STAR).
+6. **Bước 6 (Structured Output Validation)**: Ràng buộc schema JSON chặt chẽ với các trường: `category`, `question`, `difficulty`, `contextFromCV`, `expectedKeyPoints`, `sampleRubric`.
+7. **Bước 7 (Human-in-the-loop & Export)**: Cho phép Recruiter xem lại, gắn tag, chỉnh sửa nội dung và xuất tài liệu phỏng vấn.
+
+### 3. Đánh giá so sánh: Direct LLM Prompting vs RAG-based Approach
+| Tiêu chí | Vanilla LLM Prompting | RAG-based Interview Generation |
+|---|---|---|
+| **Độ liên kết hồ sơ (Groundedness)** | Trung bình (Dễ bị ảo giác) | Rất cao (Có citation & evidence từ project) |
+| **Bao phủ lỗ hổng (Gap Coverage)** | Phụ thuộc may rủi vào prompt | Đảm bảo 100% đánh trúng kỹ năng còn thiếu |
+| **Tính chuẩn hóa (Standardization)** | Thấp (Mỗi lần sinh một kiểu) | Cao (Kế thừa từ Question Bank & Rubric) |
+| **Độ trễ & Chi phí (Latency & Cost)** | Nhanh hơn (1 gọi LLM) | Thêm bước embedding & retrieval (~200ms) |
+
+---
+
 ## 🏁 Tổng Kết & Giá Trị Đề Tài
 
 Tài liệu nghiên cứu 85 trang đã chứng minh tính khoa học và lộ trình bài bản của dự án **Smart HR & Candidate Screening System**:

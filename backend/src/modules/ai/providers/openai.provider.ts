@@ -109,4 +109,42 @@ export class OpenAiProvider implements IAiProvider {
       return [];
     }
   }
+
+  async generateInterviewQuestions(prompt: string, systemInstruction: string): Promise<any> {
+    if (!this.client) {
+      throw new Error('OPENAI_API_KEY is missing or invalid.');
+    }
+
+    const completion = await this.client.chat.completions.create({
+      model: this.modelName,
+      messages: [
+        { role: 'system', content: systemInstruction },
+        { role: 'user', content: prompt },
+      ],
+      response_format: { type: 'json_object' },
+      temperature: 0.2,
+    });
+
+    const content = completion.choices[0]?.message?.content || '{}';
+    return JSON.parse(content);
+  }
+
+  async extractJdCriteria(prompt: string, systemInstruction: string): Promise<any> {
+    if (!this.client) {
+      throw new Error('OPENAI_API_KEY is missing or invalid.');
+    }
+
+    const completion = await this.client.chat.completions.create({
+      model: this.modelName,
+      messages: [
+        { role: 'system', content: systemInstruction },
+        { role: 'user', content: prompt },
+      ],
+      response_format: { type: 'json_object' },
+      temperature: 0.1,
+    });
+
+    const content = completion.choices[0]?.message?.content || '{}';
+    return JSON.parse(content);
+  }
 }
