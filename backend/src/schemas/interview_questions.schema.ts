@@ -34,8 +34,8 @@ export class InterviewQuestions {
   })
   status: string;
 
-  @Prop({ type: SchemaTypes.ObjectId, ref: User.name, required: true })
-  createdBy: Types.ObjectId;
+  @Prop({ type: SchemaTypes.ObjectId, ref: User.name, required: false })
+  createdBy?: Types.ObjectId;
 }
 
 export const InterviewQuestionsSchema = SchemaFactory.createForClass(InterviewQuestions);

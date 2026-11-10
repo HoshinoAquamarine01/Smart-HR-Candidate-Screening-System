@@ -30,8 +30,8 @@ export class Jobs {
   @Prop({ type: [Number], default: [] })
   embedding: number[];
 
-  @Prop({ type: SchemaTypes.ObjectId, ref: User.name, required: true })
-  createdBy: Types.ObjectId;
+  @Prop({ type: SchemaTypes.ObjectId, ref: User.name, required: false })
+  createdBy?: Types.ObjectId;
 
   @Prop({ required: true, enum: ['DRAFT', 'PUBLISHED', 'CLOSED'], default: 'DRAFT' })
   status: string;
