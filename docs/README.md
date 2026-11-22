@@ -32,6 +32,9 @@ Chào mừng bạn đến với trung tâm tài liệu kỹ thuật hoàn chỉn
 
 ## 🚀 Kế Hoạch Triển Khai Chuyên Sâu Các Module Lõi (Implementation Plans)
 
+* [🗺️ CORE_API_AND_SWAGGER_POSTMAN_PLAN.md](file:///d:/Smart-HR-Candidate-Screening-System/docs/CORE_API_AND_SWAGGER_POSTMAN_PLAN.md): **Kế hoạch hoàn thiện toàn bộ Core RESTful APIs và kiểm thử Postman / Swagger Documentation.**
+* [🚀 SWAGGER_AND_POSTMAN_GUIDE.md](file:///d:/Smart-HR-Candidate-Screening-System/docs/SWAGGER_AND_POSTMAN_GUIDE.md): **[HƯỚNG DẪN KIỂM THỬ] Hướng dẫn chi tiết sử dụng Swagger UI & Postman Collection v2.1 với Auto-token Capture (56/56 Tests Passed)**.
+* [🌐 SYSTEM_IMPLEMENTATION_SUMMARY_EN.md](file:///d:/Smart-HR-Candidate-Screening-System/docs/SYSTEM_IMPLEMENTATION_SUMMARY_EN.md): **[ENGLISH MASTER REPORT] Comprehensive Architecture, Module Engineering, REST APIs & Verification Summary (241/241 Tests Passed)**.
 * [📄 OCR_MODULE_PLAN.md](file:///d:/Smart-HR-Candidate-Screening-System/docs/OCR_MODULE_PLAN.md): Kế hoạch triển khai Module OCR trích xuất văn bản thô (Tesseract / Surya).
 * [🧠 LLM_CV_EXTRACTION_PLAN.md](file:///d:/Smart-HR-Candidate-Screening-System/docs/LLM_CV_EXTRACTION_PLAN.md): Kế hoạch trích xuất thông tin CV có cấu trúc bằng LLM.
 * [⚡ AI_PARSER_OPTIMIZATION_PLAN.md](file:///d:/Smart-HR-Candidate-Screening-System/docs/AI_PARSER_OPTIMIZATION_PLAN.md): Kế hoạch tối ưu hóa tốc độ, token và độ chính xác của AI Parser.
