@@ -1,0 +1,1474 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "AppController_getHello",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "App"
+        ]
+      }
+    },
+    "/api/v1/ai/status": {
+      "get": {
+        "description": "Báo cáo tính khả dụng của Google Gemini 2.0 Flash API và OpenAI API.",
+        "operationId": "AiController_getStatus",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Trạng thái các AI Provider"
+          }
+        },
+        "summary": "Kiểm tra trạng thái sẵn sàng của các nhà cung cấp AI (Gemini / OpenAI / Heuristic Mock)",
+        "tags": [
+          "AI Engine & Status"
+        ]
+      }
+    },
+    "/api/v1/ai/extract-text": {
+      "post": {
+        "description": "Gửi văn bản CV thô để trích xuất thành đối tượng StandardCv có cấu trúc.",
+        "operationId": "AiController_extractText",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "text": {
+                    "type": "string",
+                    "example": "Nguyễn Văn A. Senior Backend Developer. 5 years experience with NestJS, MongoDB, Docker."
+                  }
+                },
+                "required": [
+                  "text"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Dữ liệu CV cấu trúc trích xuất"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Trích xuất trực tiếp dữ liệu cấu trúc từ đoạn văn bản thô",
+        "tags": [
+          "AI Engine & Status"
+        ]
+      }
+    },
+    "/api/v1/cv/upload": {
+      "post": {
+        "description": "Nhận tệp CV từ ứng viên hoặc nhà tuyển dụng, lưu trữ và đưa vào tiến trình trích xuất văn bản thô (Tesseract OCR) và LLM parsing ra cấu trúc JSON chuẩn.",
+        "operationId": "CvController_uploadCv",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Tệp CV định dạng PDF, DOCX, DOC hoặc ảnh PNG/JPEG (Tối đa 5MB)"
+                  }
+                },
+                "required": [
+                  "file"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Tải lên CV và trích xuất thành công"
+          },
+          "400": {
+            "description": "Tệp không hợp lệ hoặc kích thước vượt quá 5MB"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Tải lên tài liệu CV (PDF/DOCX/PNG) & tự động kích hoạt OCR + LLM Extraction [FR-CV-01]",
+        "tags": [
+          "CV & Extraction"
+        ]
+      }
+    },
+    "/api/v1/cv/{id}": {
+      "get": {
+        "description": "Trả về thông tin cá nhân, kỹ năng technical/soft, lịch sử kinh nghiệm làm việc, học vấn và các dự án của ứng viên.",
+        "operationId": "CvController_getCvById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Mã ObjectId của hồ sơ CV",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chi tiết hồ sơ CV bóc tách"
+          },
+          "404": {
+            "description": "Không tìm thấy hồ sơ CV"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Lấy dữ liệu CV đã bóc tách cấu trúc [FR-CV-02]",
+        "tags": [
+          "CV & Extraction"
+        ]
+      }
+    },
+    "/api/v1/cv/{id}/extract": {
+      "post": {
+        "description": "Chạy lại pipeline OCR và LLM parser cho hồ sơ CV đã lưu nếu trước đó xảy ra lỗi.",
+        "operationId": "CvController_reExtractCv",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Mã ObjectId của hồ sơ CV",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Trích xuất lại thành công"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Yêu cầu AI trích xuất lại cấu trúc CV (Re-extract)",
+        "tags": [
+          "CV & Extraction"
+        ]
+      }
+    },
+    "/api/v1/cv/{id}/file": {
+      "get": {
+        "operationId": "CvController_getCvFile",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Mã ObjectId của hồ sơ CV",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dòng stream file nhị phân"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Tải xuống hoặc xem trực tuyến file CV gốc",
+        "tags": [
+          "CV & Extraction"
+        ]
+      }
+    },
+    "/api/v1/auth/register": {
+      "post": {
+        "description": "Tạo tài khoản Recruiter hoặc Manager, mã hóa mật khẩu Bcrypt và lưu vào CSDL.",
+        "operationId": "AuthController_register[0]",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Đăng ký tài khoản thành công"
+          },
+          "400": {
+            "description": "Dữ liệu đầu vào không hợp lệ hoặc email đã tồn tại"
+          }
+        },
+        "summary": "Đăng ký tài khoản người dùng mới",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "description": "Tạo tài khoản Recruiter hoặc Manager, mã hóa mật khẩu Bcrypt và lưu vào CSDL.",
+        "operationId": "AuthController_register[1]",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Đăng ký tài khoản thành công"
+          },
+          "400": {
+            "description": "Dữ liệu đầu vào không hợp lệ hoặc email đã tồn tại"
+          }
+        },
+        "summary": "Đăng ký tài khoản người dùng mới",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "description": "Xác thực thông tin tài khoản và trả về JWT Bearer Token có thời hạn.",
+        "operationId": "AuthController_login[0]",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Đăng nhập thành công, trả về access_token và user info"
+          },
+          "401": {
+            "description": "Sai thông tin email hoặc mật khẩu"
+          }
+        },
+        "summary": "Đăng nhập hệ thống & lấy JWT Access Token",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "description": "Xác thực thông tin tài khoản và trả về JWT Bearer Token có thời hạn.",
+        "operationId": "AuthController_login[1]",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Đăng nhập thành công, trả về access_token và user info"
+          },
+          "401": {
+            "description": "Sai thông tin email hoặc mật khẩu"
+          }
+        },
+        "summary": "Đăng nhập hệ thống & lấy JWT Access Token",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/api/v1/auth/profile": {
+      "get": {
+        "description": "Yêu cầu Bearer Token trong Header. Trả về thông tin danh tính từ JWT Payload.",
+        "operationId": "AuthController_getProfile[0]",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Lấy thông tin người dùng thành công"
+          },
+          "401": {
+            "description": "Token không hợp lệ hoặc đã hết hạn"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Lấy thông tin tài khoản đang đăng nhập",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/auth/profile": {
+      "get": {
+        "description": "Yêu cầu Bearer Token trong Header. Trả về thông tin danh tính từ JWT Payload.",
+        "operationId": "AuthController_getProfile[1]",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Lấy thông tin người dùng thành công"
+          },
+          "401": {
+            "description": "Token không hợp lệ hoặc đã hết hạn"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Lấy thông tin tài khoản đang đăng nhập",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/api/v1/users/{email}": {
+      "get": {
+        "description": "Tìm kiếm bản ghi người dùng trong CSDL bằng địa chỉ email.",
+        "operationId": "UsersController_getAllUsers[0]",
+        "parameters": [
+          {
+            "name": "email",
+            "required": true,
+            "in": "path",
+            "description": "Địa chỉ email cần tra cứu",
+            "schema": {
+              "example": "recruiter@smarthr.io",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tìm thấy người dùng hoặc trả về null"
+          }
+        },
+        "summary": "Tra cứu thông tin người dùng theo email",
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/users/{email}": {
+      "get": {
+        "description": "Tìm kiếm bản ghi người dùng trong CSDL bằng địa chỉ email.",
+        "operationId": "UsersController_getAllUsers[1]",
+        "parameters": [
+          {
+            "name": "email",
+            "required": true,
+            "in": "path",
+            "description": "Địa chỉ email cần tra cứu",
+            "schema": {
+              "example": "recruiter@smarthr.io",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tìm thấy người dùng hoặc trả về null"
+          }
+        },
+        "summary": "Tra cứu thông tin người dùng theo email",
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/api/v1/screening/match": {
+      "post": {
+        "description": "Thực thi thuật toán Hybrid Matching kết hợp Semantic Vector Cosine Similarity (35%), Skill-based Matching (40%), Experience Scoring (15%) và Education Scoring (10%) kèm giải trình AI XAI Rationale.",
+        "operationId": "ScreeningController_matchScreening",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MatchScreeningDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Kết quả chấm điểm tương thích chi tiết"
+          }
+        },
+        "summary": "Chấm điểm tương thích hồ sơ CV và tin tuyển dụng JD [FR-SCR-01]",
+        "tags": [
+          "Candidate Screening & Matching"
+        ]
+      }
+    },
+    "/api/v1/screening/rank/{jobId}": {
+      "post": {
+        "description": "Tự động tính điểm và sắp xếp danh sách ứng viên đã nộp đơn theo thứ tự điểm số từ cao xuống thấp.",
+        "operationId": "ScreeningController_rankCandidates",
+        "parameters": [
+          {
+            "name": "jobId",
+            "required": true,
+            "in": "path",
+            "description": "Mã ObjectId của tin tuyển dụng",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Số lượng ứng viên tối đa trả về (mặc định 20)",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bảng xếp hạng ứng viên"
+          }
+        },
+        "summary": "Xếp hạng Top ứng viên phù hợp nhất cho một vị trí tuyển dụng [FR-SCR-02]",
+        "tags": [
+          "Candidate Screening & Matching"
+        ]
+      }
+    },
+    "/api/v1/screening/taxonomy/lookup": {
+      "get": {
+        "description": "Chuẩn hóa kỹ năng viết tắt (alias/fuzzy matching, VD: \"k8s\" -> \"Kubernetes\", \"reactjs\" -> \"React\").",
+        "operationId": "ScreeningController_lookupSkill",
+        "parameters": [
+          {
+            "name": "skill",
+            "required": true,
+            "in": "query",
+            "description": "Tên kỹ năng cần chuẩn hóa",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Kết quả chuẩn hóa kỹ năng"
+          }
+        },
+        "summary": "Tra cứu chuẩn hóa kỹ năng từ Skill Taxonomy Dictionary",
+        "tags": [
+          "Candidate Screening & Matching"
+        ]
+      }
+    },
+    "/api/v1/interviews/generate": {
+      "post": {
+        "description": "Truy xuất thông tin từ CV và JD, đối soát khoảng cách kỹ năng (Skill Gap) và kết hợp với ngân hàng câu hỏi chuyên ngành để tạo ra bộ câu hỏi cá nhân hóa kèm thang điểm đánh giá 3 mức (Poor / Acceptable / Excellent).",
+        "operationId": "InterviewsController_generateQuestions",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateInterviewDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Khởi tạo bộ câu hỏi phỏng vấn thành công"
+          }
+        },
+        "summary": "Khởi tạo bộ câu hỏi phỏng vấn thích ứng bằng kiến trúc RAG [FR-INT-01]",
+        "tags": [
+          "AI Interview Generation"
+        ]
+      }
+    },
+    "/api/v1/interviews/application/{applicationId}": {
+      "get": {
+        "operationId": "InterviewsController_getByApplicationId",
+        "parameters": [
+          {
+            "name": "applicationId",
+            "required": true,
+            "in": "path",
+            "description": "Mã ObjectId của đơn ứng tuyển",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bộ câu hỏi phỏng vấn"
+          }
+        },
+        "summary": "Lấy bộ câu hỏi phỏng vấn theo mã đơn ứng tuyển (applicationId)",
+        "tags": [
+          "AI Interview Generation"
+        ]
+      }
+    },
+    "/api/v1/interviews/{id}": {
+      "get": {
+        "operationId": "InterviewsController_getById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Mã ObjectId của bộ câu hỏi",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chi tiết bộ câu hỏi"
+          },
+          "404": {
+            "description": "Không tìm thấy bộ câu hỏi"
+          }
+        },
+        "summary": "Lấy bộ câu hỏi phỏng vấn theo mã tài liệu phỏng vấn (interviewId)",
+        "tags": [
+          "AI Interview Generation"
+        ]
+      },
+      "put": {
+        "description": "Cho phép nhà tuyển dụng thêm, sửa, xóa, ghi chú hoặc chấm điểm trực tiếp từng câu hỏi.",
+        "operationId": "InterviewsController_updateQuestions",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Mã ObjectId của bộ câu hỏi",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateInterviewQuestionsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cập nhật thành công"
+          }
+        },
+        "summary": "Chỉnh sửa bộ câu hỏi phỏng vấn (Human-in-the-loop) [FR-INT-02]",
+        "tags": [
+          "AI Interview Generation"
+        ]
+      }
+    },
+    "/api/v1/interviews/{id}/export": {
+      "post": {
+        "description": "Tạo phiếu câu hỏi phỏng vấn sẵn sàng in hoặc gửi cho người phỏng vấn chuyên môn.",
+        "operationId": "InterviewsController_exportQuestions",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Mã ObjectId của bộ câu hỏi",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExportInterviewDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Xuất phiếu phỏng vấn thành công"
+          }
+        },
+        "summary": "Xuất phiếu phỏng vấn đa định dạng (Markdown / Plain Text / JSON) [FR-INT-03]",
+        "tags": [
+          "AI Interview Generation"
+        ]
+      }
+    },
+    "/api/v1/interviews/question-bank/templates": {
+      "get": {
+        "description": "Truy xuất các câu hỏi chuẩn STAR hoặc Technical Deep Dive dựa trên kỹ năng.",
+        "operationId": "InterviewsController_searchTemplates",
+        "parameters": [
+          {
+            "name": "skills",
+            "required": false,
+            "in": "query",
+            "description": "Danh sách kỹ năng phân cách bởi dấu phẩy (VD: NestJS,Docker)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "category",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "enum": [
+                "CLARIFICATION",
+                "TECHNICAL_DEEP_DIVE",
+                "SKILL_GAP",
+                "BEHAVIORAL_STAR"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Số lượng câu hỏi mẫu tối đa",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Danh sách câu hỏi mẫu"
+          }
+        },
+        "summary": "Tra cứu câu hỏi mẫu từ Ngân hàng câu hỏi chuyên môn (Domain Question Bank)",
+        "tags": [
+          "AI Interview Generation"
+        ]
+      }
+    },
+    "/api/v1/assessments/create": {
+      "post": {
+        "operationId": "AssessmentsController_createAssessment",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAssessmentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Tạo bài đánh giá thành công"
+          }
+        },
+        "summary": "Tạo bài đánh giá / khảo sát năng lực ứng viên",
+        "tags": [
+          "Candidate Assessments"
+        ]
+      }
+    },
+    "/api/v1/candidates": {
+      "get": {
+        "description": "Truy xuất danh sách ứng viên từ MongoDB. Hỗ trợ tìm kiếm theo tên/email, lọc theo kỹ năng (skill), trạng thái tuyển dụng (status), tin tuyển dụng (jobId), điểm matching tối thiểu (minScore) và phân trang.",
+        "operationId": "CandidatesController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Danh sách ứng viên kèm phân trang"
+          }
+        },
+        "summary": "Lấy danh sách ứng viên & lọc đa chiều",
+        "tags": [
+          "Candidates"
+        ]
+      },
+      "post": {
+        "description": "Nếu email đã tồn tại trong CSDL, hệ thống tự động trả về hồ sơ hiện hữu, tránh sinh bản ghi trùng rác.",
+        "operationId": "CandidatesController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCandidateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Tạo hoặc trả về ứng viên thành công"
+          }
+        },
+        "summary": "Tạo mới hoặc khử trùng lặp hồ sơ ứng viên theo email",
+        "tags": [
+          "Candidates"
+        ]
+      }
+    },
+    "/api/v1/candidates/{id}": {
+      "get": {
+        "description": "Trả về thông tin cá nhân, toàn bộ dữ liệu CV đã bóc tách (kỹ năng, kinh nghiệm, dự án, học vấn), các tập tin CV đính kèm và lịch sử ứng tuyển kèm điểm số AI Screening.",
+        "operationId": "CandidatesController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Mã ObjectId của ứng viên",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Hồ sơ chi tiết 360°"
+          },
+          "404": {
+            "description": "Không tìm thấy ứng viên"
+          }
+        },
+        "summary": "Xem chi tiết hồ sơ 360° của ứng viên",
+        "tags": [
+          "Candidates"
+        ]
+      },
+      "put": {
+        "description": "Cập nhật thông tin liên hệ, chức danh hoặc kích hoạt cờ anonymized để sàng lọc không thiên vị.",
+        "operationId": "CandidatesController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Mã ObjectId của ứng viên",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCandidateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cập nhật thành công"
+          }
+        },
+        "summary": "Cập nhật thông tin hồ sơ ứng viên & bật/tắt cờ ẩn danh (Blind Screening)",
+        "tags": [
+          "Candidates"
+        ]
+      },
+      "delete": {
+        "operationId": "CandidatesController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Mã ObjectId của ứng viên",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Xóa hồ sơ thành công"
+          }
+        },
+        "summary": "Xóa hồ sơ ứng viên & cascade dọn dẹp đơn ứng tuyển liên quan",
+        "tags": [
+          "Candidates"
+        ]
+      }
+    },
+    "/api/v1/candidates/{id}/status": {
+      "patch": {
+        "description": "Cập nhật trạng thái tuyển dụng của ứng viên (đồng bộ sang đơn ứng tuyển).",
+        "operationId": "CandidatesController_updateStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Mã ObjectId của ứng viên",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCandidateStatusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Đổi trạng thái thành công"
+          }
+        },
+        "summary": "Chuyển trạng thái tuyển dụng của ứng viên",
+        "tags": [
+          "Candidates"
+        ]
+      }
+    },
+    "/api/v1/jobs": {
+      "post": {
+        "description": "Tạo tin tuyển dụng. Tự động gọi AI phân tích văn bản JD thành requiredSkills, preferredSkills, số năm kinh nghiệm và sinh vector embedding 768 chiều.",
+        "operationId": "JobsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateJobDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Tạo tin tuyển dụng thành công"
+          },
+          "400": {
+            "description": "Văn bản JD quá ngắn hoặc tham số không hợp lệ"
+          }
+        },
+        "summary": "Tạo tin tuyển dụng mới kèm AI trích xuất tiêu chí & Embedding",
+        "tags": [
+          "Jobs"
+        ]
+      },
+      "get": {
+        "description": "Hỗ trợ phân trang, tìm kiếm theo tiêu đề, lọc theo phòng ban và trạng thái (DRAFT/PUBLISHED/CLOSED).",
+        "operationId": "JobsController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Danh sách tin tuyển dụng"
+          }
+        },
+        "summary": "Lấy danh sách tin tuyển dụng",
+        "tags": [
+          "Jobs"
+        ]
+      }
+    },
+    "/api/v1/jobs/parse-jd": {
+      "post": {
+        "description": "Nhận văn bản JD thô và trả về cấu trúc tiêu chí dự kiến cùng vector embedding.",
+        "operationId": "JobsController_parseJd",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ParseJdDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Phân tích JD thành công"
+          }
+        },
+        "summary": "Xem trước kết quả AI trích xuất tiêu chí từ văn bản JD (không lưu DB)",
+        "tags": [
+          "Jobs"
+        ]
+      }
+    },
+    "/api/v1/jobs/{id}": {
+      "get": {
+        "description": "Trả về thông tin JD, tiêu chí trích xuất và số lượng ứng viên theo từng trạng thái.",
+        "operationId": "JobsController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Mã ObjectId của tin tuyển dụng",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chi tiết tin tuyển dụng"
+          },
+          "404": {
+            "description": "Không tìm thấy tin tuyển dụng"
+          }
+        },
+        "summary": "Lấy chi tiết tin tuyển dụng & thống kê phễu ứng viên",
+        "tags": [
+          "Jobs"
+        ]
+      },
+      "put": {
+        "description": "Cập nhật tiêu đề, phòng ban hoặc mô tả JD (tùy chọn bóc tách lại AI).",
+        "operationId": "JobsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Mã ObjectId của tin tuyển dụng",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateJobDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cập nhật thành công"
+          }
+        },
+        "summary": "Cập nhật thông tin tin tuyển dụng",
+        "tags": [
+          "Jobs"
+        ]
+      },
+      "delete": {
+        "description": "Bảo vệ toàn vẹn dữ liệu: Không xóa vĩnh viễn tin tuyển dụng đã có hồ sơ ứng tuyển.",
+        "operationId": "JobsController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Mã ObjectId của tin tuyển dụng",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Xóa hoặc đóng tin tuyển dụng thành công"
+          }
+        },
+        "summary": "Xóa tin tuyển dụng (Tự động chuyển sang CLOSED nếu đã có ứng viên)",
+        "tags": [
+          "Jobs"
+        ]
+      }
+    },
+    "/api/v1/jobs/{id}/status": {
+      "patch": {
+        "operationId": "JobsController_updateStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Mã ObjectId của tin tuyển dụng",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "DRAFT",
+                      "PUBLISHED",
+                      "CLOSED"
+                    ],
+                    "example": "PUBLISHED"
+                  }
+                },
+                "required": [
+                  "status"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Đổi trạng thái thành công"
+          }
+        },
+        "summary": "Đổi trạng thái nhanh cho tin tuyển dụng (DRAFT / PUBLISHED / CLOSED)",
+        "tags": [
+          "Jobs"
+        ]
+      }
+    },
+    "/api/v1/applications/kanban": {
+      "get": {
+        "description": "Nhóm toàn bộ hồ sơ ứng tuyển theo 7 cột trạng thái (NEW, SCREENING, SHORTLISTED, INTERVIEW, OFFER, HIRED, REJECTED) kèm thẻ điểm số AI Matching Radar. Hỗ trợ lọc theo jobId.",
+        "operationId": "ApplicationsController_getKanbanBoard",
+        "parameters": [
+          {
+            "name": "jobId",
+            "required": false,
+            "in": "query",
+            "description": "Lọc riêng cho 1 vị trí tuyển dụng",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dữ liệu bảng Kanban thành công"
+          }
+        },
+        "summary": "Lấy dữ liệu bảng Kanban phân nhóm theo 7 cột trạng thái",
+        "tags": [
+          "Applications & Kanban"
+        ]
+      }
+    },
+    "/api/v1/applications": {
+      "get": {
+        "description": "Lọc theo jobId, candidateId, status, tiến trình AI (aiPipelineStatus), tìm kiếm tên/email ứng viên và điểm sàn matching (minScore).",
+        "operationId": "ApplicationsController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Danh sách đơn ứng tuyển"
+          }
+        },
+        "summary": "Lấy danh sách đơn ứng tuyển & lọc đa tiêu chí",
+        "tags": [
+          "Applications & Kanban"
+        ]
+      },
+      "post": {
+        "description": "Tạo đơn ứng tuyển mới. Nếu ứng viên đã nộp cho tin tuyển dụng này, tự động trả về đơn hiện hữu.",
+        "operationId": "ApplicationsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateApplicationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Tạo đơn ứng tuyển thành công"
+          }
+        },
+        "summary": "Nộp đơn ứng tuyển (Khử trùng lặp candidateId + jobId)",
+        "tags": [
+          "Applications & Kanban"
+        ]
+      }
+    },
+    "/api/v1/applications/{id}": {
+      "get": {
+        "operationId": "ApplicationsController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Mã ObjectId của đơn ứng tuyển",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chi tiết đơn ứng tuyển"
+          },
+          "404": {
+            "description": "Không tìm thấy đơn ứng tuyển"
+          }
+        },
+        "summary": "Xem chi tiết đơn ứng tuyển (kèm radar điểm AI & lịch sử quyết định)",
+        "tags": [
+          "Applications & Kanban"
+        ]
+      },
+      "delete": {
+        "operationId": "ApplicationsController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Mã ObjectId của đơn ứng tuyển",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Xóa đơn ứng tuyển thành công"
+          }
+        },
+        "summary": "Xóa đơn ứng tuyển & dọn dẹp cascade kết quả screening liên quan",
+        "tags": [
+          "Applications & Kanban"
+        ]
+      }
+    },
+    "/api/v1/applications/{id}/status": {
+      "patch": {
+        "description": "Cập nhật trạng thái ứng viên (NEW -> SCREENING -> SHORTLISTED -> INTERVIEW -> OFFER -> HIRED / REJECTED) và tự động ghi nhật ký kiểm toán (audit trail) kèm thời gian, người quyết định, lý do hoặc thông tin thư mời nhận việc.",
+        "operationId": "ApplicationsController_updateStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Mã ObjectId của đơn ứng tuyển",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateApplicationStatusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cập nhật trạng thái Kanban thành công"
+          }
+        },
+        "summary": "Kéo/thả ứng viên giữa các cột Kanban [FR-CAND-03]",
+        "tags": [
+          "Applications & Kanban"
+        ]
+      }
+    },
+    "/api/v1/analytics/dashboard": {
+      "get": {
+        "description": "Trích xuất dữ liệu tổng hợp phục vụ hiển thị các thẻ KPIs, biểu đồ phễu 7 vòng Kanban, biểu đồ tròn phân vị điểm số (<50%, 50-75%, >75%) và Top 5 kỹ năng ứng viên còn thiếu hụt nhiều nhất.",
+        "operationId": "AnalyticsController_getDashboardOverview",
+        "parameters": [
+          {
+            "name": "toDate",
+            "required": false,
+            "in": "query",
+            "description": "Lọc hồ sơ nộp đến ngày (ISO 8601, VD: 2026-11-30)",
+            "schema": {}
+          },
+          {
+            "name": "fromDate",
+            "required": false,
+            "in": "query",
+            "description": "Lọc hồ sơ nộp từ ngày (ISO 8601, VD: 2026-11-01)",
+            "schema": {}
+          },
+          {
+            "name": "jobId",
+            "required": false,
+            "in": "query",
+            "description": "Lọc số liệu riêng cho 1 vị trí tuyển dụng",
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dữ liệu báo cáo Dashboard thành công"
+          }
+        },
+        "summary": "Lấy số liệu tổng quan Dashboard & biểu đồ tuyển dụng [FR-REP-01]",
+        "tags": [
+          "Recruitment Analytics"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Smart HR & Candidate Screening System API",
+    "description": "Nền tảng tuyển dụng thông minh: Sàng lọc hồ sơ ứng viên tự động (AI Hybrid Scoring) & Sinh bộ câu hỏi phỏng vấn thích ứng (RAG Engine).\n\n**Quy chuẩn xác thực**: Đối với các endpoint yêu cầu xác thực, truyền Bearer Token qua header `Authorization: Bearer <access_token>`.",
+    "version": "1.0.0",
+    "contact": {}
+  },
+  "tags": [
+    {
+      "name": "Authentication",
+      "description": "Xác thực tài khoản, đăng ký, đăng nhập & phân quyền JWT"
+    },
+    {
+      "name": "Users",
+      "description": "Quản lý thông tin tài khoản người dùng"
+    },
+    {
+      "name": "Jobs",
+      "description": "Quản lý tin tuyển dụng & AI bóc tách tiêu chí Job Description [FR-JOB-01..03]"
+    },
+    {
+      "name": "CV & Extraction",
+      "description": "Tải lên tài liệu CV, trích xuất OCR văn bản thô & bóc tách cấu trúc LLM [FR-CV-01..02]"
+    },
+    {
+      "name": "Candidate Screening & Matching",
+      "description": "Đối soát tiêu chí CV - JD, Semantic Matching & Xếp hạng ứng viên [FR-SCR-01..02]"
+    },
+    {
+      "name": "Candidates",
+      "description": "Quản lý hồ sơ ứng viên 360°, bộ lọc đa chiều & bảo vệ quyền riêng tư [FR-CAN-01..03]"
+    },
+    {
+      "name": "Applications & Kanban",
+      "description": "Quản lý đơn ứng tuyển, chu trình Kanban 7 bước & nhật ký quyết định tuyển dụng [FR-CAND-03], [FR-PIP-01]"
+    },
+    {
+      "name": "AI Interview Generation",
+      "description": "Khởi tạo bộ câu hỏi phỏng vấn thích ứng theo kiến trúc RAG & Rubric đánh giá STAR [FR-INT-01..03]"
+    },
+    {
+      "name": "Recruitment Analytics",
+      "description": "Báo cáo & Thống kê tuyển dụng Dashboard, phân vị điểm số & khoảng cách kỹ năng [FR-REP-01]"
+    }
+  ],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "JWT-auth": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http",
+        "name": "JWT Authorization",
+        "description": "Nhập JWT Access Token nhận được từ API /api/v1/auth/login",
+        "in": "header"
+      }
+    },
+    "schemas": {
+      "RegisterDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "recruiter@smarthr.io",
+            "description": "Địa chỉ email đăng ký tài khoản"
+          },
+          "password": {
+            "type": "string",
+            "example": "SecurePassword123!",
+            "description": "Mật khẩu bảo mật (từ 6 đến 32 ký tự)",
+            "minLength": 6,
+            "maxLength": 32
+          },
+          "fullName": {
+            "type": "string",
+            "example": "Nguyễn Văn Hoàng",
+            "description": "Họ và tên đầy đủ của người dùng"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "ADMIN",
+              "HR_MANAGER",
+              "RECRUITER",
+              "HIRING_MANAGER"
+            ],
+            "default": "RECRUITER",
+            "description": "Vai trò người dùng trong hệ thống"
+          },
+          "department": {
+            "type": "string",
+            "example": "Talent Acquisition Department",
+            "description": "Phòng ban làm việc"
+          }
+        },
+        "required": [
+          "email",
+          "password",
+          "fullName"
+        ]
+      },
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "recruiter@smarthr.io",
+            "description": "Địa chỉ email tài khoản đã đăng ký"
+          },
+          "password": {
+            "type": "string",
+            "example": "SecurePassword123!",
+            "description": "Mật khẩu tài khoản (tối thiểu 6 ký tự)",
+            "minLength": 6
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "MatchScreeningDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "GenerateInterviewDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateInterviewQuestionsDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "ExportInterviewDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateAssessmentDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateCandidateDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateCandidateDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateCandidateStatusDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateJobDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "ParseJdDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateJobDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateApplicationDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateApplicationStatusDto": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  }
+}
